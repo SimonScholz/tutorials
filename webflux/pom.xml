@@ -33,8 +33,14 @@
 			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-circuitbreaker-reactor-resilience4j</artifactId>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-spring-boot2</artifactId>
+			<version>1.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-micrometer</artifactId>
+			<version>1.7.0</version>
 		</dependency>
 
 		<dependency>
@@ -72,6 +78,11 @@
 			<artifactId>jackson-databind-nullable</artifactId>
 			<version>0.2.1</version>
 		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-core</artifactId>
+			<version>3.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
@@ -95,15 +106,16 @@
 			<plugin>
 				<groupId>org.openapitools</groupId>
 				<artifactId>openapi-generator-maven-plugin</artifactId>
-				<version>4.3.1</version>
+				<version>5.0.1</version>
 				<executions>
-					<!--execution>
+					<execution>
 						<id>spring-boot-server</id>
 						<goals>
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/resources/api-specs/petstore.yaml</inputSpec>
+							<inputSpec>${project.basedir}/src/main/resources/api-specs/developer-api.yaml</inputSpec>
+							<templateDirectory>${project.basedir}/src/main/resources/api-specs/template/</templateDirectory>
 							<generatorName>spring</generatorName>
 							<apiPackage>com.example.api</apiPackage>
 							<modelPackage>com.example.dto</modelPackage>
@@ -113,6 +125,9 @@
 							<generateApis>true</generateApis>
 							<generateModels>true</generateModels>
 							<generateModelTests>false</generateModelTests>
+							<additionalProperties>
+								server-base-path=/v2
+							</additionalProperties>
 							<configOptions>
 								<sourceFolder>src/main/generated</sourceFolder>
 								<reactive>true</reactive>
@@ -120,18 +135,18 @@
 								<library>spring-boot</library>
 							</configOptions>
 						</configuration>
-					</execution-->
+					</execution>
 					<execution>
 						<id>webclient</id>
 						<goals>
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/resources/api-specs/petstore.yaml</inputSpec>
+							<inputSpec>${project.basedir}/src/main/resources/api-specs/github-api.yaml</inputSpec>
 							<generatorName>java</generatorName>
-							<apiPackage>com.example.api</apiPackage>
-							<modelPackage>com.example.dto</modelPackage>
-							<invokerPackage>com.example.client</invokerPackage>
+							<apiPackage>com.github.api</apiPackage>
+							<modelPackage>com.github.dto</modelPackage>
+							<invokerPackage>com.github.client</invokerPackage>
 							<modelNameSuffix>DTO</modelNameSuffix>
 							<generateApiTests>false</generateApiTests>
 							<generateApis>true</generateApis>
