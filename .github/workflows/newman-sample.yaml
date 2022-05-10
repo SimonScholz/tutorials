@@ -14,4 +14,5 @@ jobs:
       - uses: matt-ball/newman-action@master
         with:
           collection: postman/http-bin-get-request.json
-          envVar: '[{ "user": "Newman", "auth_token": "${{ secrets.NEWMAN_SAMPLE_TOKEN }}" }]'
+          envVar: '[{ "user": "Newman" }]'
+          globalVar: '[{"auth_token" : "${{ secrets.NEWMAN_SAMPLE_TOKEN }}"}]'
