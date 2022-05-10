@@ -1,0 +1,17 @@
+---
+name: Newman CLI Sample Run
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+    - master
+  
+jobs:
+  newman:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: matt-ball/newman-action@master
+        with:
+          collection: postman/http-bin-get-request.json
+          envVar: '[{ "user": "Newman", "auth_token": "${{ secrets.NEWMAN_SAMPLE_TOKEN }}" }]'
