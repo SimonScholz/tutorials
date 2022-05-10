@@ -5,6 +5,7 @@ on:
 
 jobs:
   newman:
+    name: Run Postman collections + tests with Newman
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
