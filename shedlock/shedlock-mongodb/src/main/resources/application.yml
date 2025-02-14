@@ -1,0 +1,9 @@
+quarkus:
+  mongodb:
+    devservices:
+      enabled: true
+      port: 27018
+
+shedlock:
+  defaults:
+    lock-at-most-for: PT20S

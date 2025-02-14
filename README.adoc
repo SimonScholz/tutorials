@@ -1,7 +1,8 @@
 == Tutorials
 
-This repo consists of sample projects for existing or upcoming tutorials, which can be found on https://simonscholz.github.io/tutorials
+This repo consists of sample projects for existing or upcoming tutorials, which can be found on https://simonscholz.dev/tutorials
 
-Please feel free to open an issue in case you find issues either in this repo or on https://simonscholz.github.io/tutorials
+Please feel free to open an issue in case you find issues either in this repo or on https://simonscholz.dev/tutorials
 
 Thanks!
+

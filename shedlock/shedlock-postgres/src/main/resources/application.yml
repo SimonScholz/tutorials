@@ -1,0 +1,16 @@
+quarkus:
+  flyway:
+    migrate-at-start: true
+  datasource:
+    db-kind: postgresql
+    username: quarkus
+    password: quarkus
+    jdbc:
+      url: jdbc:postgresql://localhost:6543/quarkus
+    devservices:
+      enabled: true
+      port: 6543
+
+shedlock:
+  defaults:
+    lock-at-most-for: PT20S
