@@ -1,0 +1,16 @@
+greeting:
+  message: "hello"
+
+quarkus:
+  application:
+    name: your-application
+  container-image:
+    name: your-application
+    registry: ghcr.io
+    username: ${CONTAINER_REGISTRY_USERNAME}
+    password: ${CONTAINER_REGISTRY_PASSWORD}
+    group: ${CONTAINER_REGISTRY_USERNAME}
+    tag: latest
+    build: true
+    push: false
+    builder: jib

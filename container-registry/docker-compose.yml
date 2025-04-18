@@ -1,0 +1,10 @@
+services:
+  your-application:
+    image: ghcr.io/simonscholz/your-application:latest
+    restart: "no"
+    ports:
+      - "8080:8080"
+    pull_policy: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
