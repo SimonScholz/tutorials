@@ -15,7 +15,7 @@ val quarkusPlatformArtifactId: String by project
 val quarkusPlatformVersion: String by project
 
 dependencies {
-    implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
+    implementation(enforcedPlatform("$quarkusPlatformGroupId:$quarkusPlatformArtifactId:$quarkusPlatformVersion"))
     implementation("io.quarkus:quarkus-rest-client-kotlin-serialization")
     implementation("io.quarkus:quarkus-kotlin")
     implementation("io.quarkus:quarkus-config-yaml")
@@ -30,6 +30,7 @@ dependencies {
     implementation("io.quarkus:quarkus-flyway")
     implementation("io.quarkus:quarkus-jdbc-postgresql")
     implementation("org.flywaydb:flyway-database-postgresql")
+    implementation("io.quarkus:quarkus-micrometer-registry-prometheus")
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:rest-assured")
 }

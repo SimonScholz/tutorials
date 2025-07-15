@@ -10,6 +10,9 @@ quarkus:
     devservices:
       enabled: true
       port: 6543
+  scheduler:
+    metrics:
+      enabled: true
 
 shedlock:
   defaults:
