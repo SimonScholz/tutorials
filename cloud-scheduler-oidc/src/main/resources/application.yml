@@ -1,0 +1,10 @@
+quarkus:
+  keycloak:
+    devservices:
+      enabled: false
+  oidc:
+    auth-server-url: https://accounts.google.com
+    token:
+      issuer: https://accounts.google.com
+      audience: ${OIDC_AUDIENCE:https://example-backend.gke.dev.example.io}
+    application-type: service
