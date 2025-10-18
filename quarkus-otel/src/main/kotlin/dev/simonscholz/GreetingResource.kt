@@ -11,5 +11,8 @@ class GreetingResource(
 ) {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    fun hello() = dummyService.dummy()
+    fun hello(): String {
+        Thread.sleep(100)
+        return dummyService.dummy()
+    }
 }

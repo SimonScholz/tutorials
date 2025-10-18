@@ -1,10 +1,12 @@
 package dev.simonscholz
 
+import io.opentelemetry.instrumentation.annotations.WithSpan
 import jakarta.enterprise.context.ApplicationScoped
 import kotlin.random.Random
 
 @ApplicationScoped
 class DummyService {
+    @WithSpan
     fun dummy(): String {
         val random = Random(3).nextInt()
         return when (random) {
