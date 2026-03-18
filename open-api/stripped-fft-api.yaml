@@ -1,0 +1,1773 @@
+openapi: 3.0.1
+info:
+  title: fulfillmenttools
+  description: This is the fulfillmenttools API documentation. Visit https://docs.fulfillmenttools.com/
+    for first steps.
+  termsOfService: http://swagger.io/terms/
+  contact:
+    name: fulfillmenttools
+    url: https://fulfillmenttools.com/
+    email: api@fulfillmenttools.com
+  version: VERSIONLESS
+servers:
+- url: "https://{tenant}.api.fulfillmenttools.com"
+  variables:
+    tenant:
+      default: your-tenant-name
+security:
+- BearerToken: []
+tags:
+- name: Orders (DOMS)
+  description: "DOMS endpoints to create, retrieve, update, and manage customer orders."
+- name: Orders Configuration (DOMS)
+  description: "DOMS endpoints to define and manage configuration settings related\
+    \ to order processing, such as defaults, business rules, and operational parameters\
+    \ that influence how orders are handled."
+- name: Routing Plans (DOMS)
+  description: Endpoints to get information out of the brain of our Distributed Order
+    Management System (DOMS).
+- name: Routing Plans Configuration (DOMS)
+  description: Endpoints for configuring routing plan handling.
+- name: Routing Strategy (DOMS)
+  description: Endpoints to configure the routing strategy of the DOMS.
+- name: Checkout Options (DOMS)
+  description: Endpoints used by shops to get the current available pickup stores
+    and available service levels like Same-Day delivery.
+- name: Sourcing Options (DOMS)
+  description: Endpoints for processing the routing decision logs.
+- name: Operative Process (Operations)
+  description: Get operative processes.
+- name: Picking (Operations)
+  description: These endpoints support the management of the picking process.
+- name: Picking Configuration (Operations)
+  description: "Endpoints to create, update and read pick jobs."
+- name: Services (Operations)
+  description: "Endpoints to create, update and read operative service jobs."
+- name: Services Configuration (Operations)
+  description: "Endpoints to create, update and read operative service jobs configuration."
+- name: Restowing (Operations)
+  description: Endpoints to manipulate restowing items.
+- name: Restowing Configuration (Operations)
+  description: Endpoints to manipulate restowing configuration.
+- name: Operative Container (Operations)
+  description: Endpoints to manipulate operative containers.
+- name: Packing (Operations)
+  description: These endpoints facilitate the packing process.
+- name: Packing Configuration (Operations)
+  description: "Endpoints to create, update and read packing configuration."
+- name: Handovers (Operations)
+  description: These endpoints manage the handover process.
+- name: Handovers Configuration (Operations)
+  description: "Endpoints to create, update and read handover configuration."
+- name: Shipments (Operations)
+  description: "Endpoints to create, update and read shipments and parcels."
+- name: Shipments Configuration (Operations)
+  description: "Endpoints to create, update and read shipping configuration."
+- name: Returns (Operations)
+  description: "Endpoints to create, update and read returns."
+- name: Returns Configuration (Operations)
+  description: "Endpoints to create, update and read returns configuration."
+- name: Stacks (Operations)
+  description: Endpoints to operate with stacks.
+- name: Carriers (Operations)
+  description: "Endpoints to create, update and read carriers."
+- name: Carriers Configuration (Operations)
+  description: "Endpoints to create, update and read carriers configuration."
+- name: Inbound (Inventory)
+  description: "Endpoints to create, update and read inbound processes and receipts."
+- name: Stowing (Inventory)
+  description: "Endpoints to create, update and read stow jobs."
+- name: Channel Availability (Inventory)
+  description: Endpoints to configure and get channel availability.
+- name: Stocks (Inventory)
+  description: "Endpoints to create, update and read stocks."
+- name: Stocks Configuration (Inventory)
+  description: "Endpoints to create, update and read stocks configuration."
+- name: Reservations (Inventory)
+  description: These endpoints handle the reservations.
+- name: Storage Locations (Inventory)
+  description: "Endpoints to create, update and read storage locations and zones."
+- name: Categories (Inventory)
+  description: "Endpoints to create, update and read categories."
+- name: Processes (Core)
+  description: A process groups all entities of an order.
+- name: External Actions (Core)
+  description: Endpoints to attach external actions to processes and append logs to
+    external actions.
+- name: Expiries (Core)
+  description: "Endpoints to read and modify expires, e.g. by extending the provisioning\
+    \ time."
+- name: Expiries Configuration (Core)
+  description: Endpoints to read and modify expires configuration.
+- name: Document Sets (Core)
+  description: "Endpoints to create, update and read document sets and files."
+- name: Custom Services (Core)
+  description: "Endpoints to create, update and read custom services."
+- name: Notification Center Configuration (Core)
+  description: Endpoints to configure the notification center.
+- name: Facilities (Core)
+  description: Facilities represent various locations that form part of the fulfillment
+    network.
+- name: Facility Groups (Core)
+  description: Facility groups combine one or multiple facilities into logical groups.
+- name: Listings (Core)
+  description: "Endpoints to create, update and read facility listings."
+- name: Measurement Units (Core)
+  description: "Endpoints to create, update and read measurement units."
+- name: Eventing (Core)
+  description: "Endpoints to create, update and read subscriptions."
+- name: User Management (Core)
+  description: "These endpoints enable the administration of user accounts, including\
+    \ creation, updating, read and deletion of user accounts."
+- name: Validations (Core)
+  description: Validate properties accepted by the fulfillmenttools platform.
+- name: Tags (Core)
+  description: "Endpoints to create, update and read tags."
+- name: Remote Configs (Core)
+  description: "Endpoints to create, update and read remote configs."
+- name: Configurations (Core)
+  description: Endpoints to update and read general configuration of the fulfillmenttools
+    platform.
+- name: Audits (Core)
+  description: Auditing helps determine who did what when.
+- name: Artifacts (Infrastructure)
+  description: Obtain artifact information provided by platform.
+- name: GraphQL (Infrastructure)
+  description: Access to fulfillmenttools platform GraphQL API.
+- name: Features (Infrastructure)
+  description: Configure features of the fulfillmenttools platform.
+- name: Health (Infrastructure)
+  description: Endpoints to get health status about the fulfillmenttools platform.
+- name: OIDC Configuration (Infrastructure)
+  description: Endpoints to configure external IDPs.
+paths:
+  /api/orders:
+    get:
+      tags:
+      - Orders (DOMS)
+      summary: List orders
+      description: ""
+      operationId: getAllOrders
+      parameters:
+      - name: startAfterId
+        in: query
+        description: all entities after given Id
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: size
+        in: query
+        description: number of entities to show
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+          default: 25
+      - name: tenantOrderId
+        in: query
+        description: filter orders by tenantOrderId
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: consumerId
+        in: query
+        description: filter orders by consumerId
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Orders are found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StrippedOrders"
+        "401":
+          description: Your user is not allowed to operate against this API instance
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiError"
+        "403":
+          description: "Your user, although recognized, is not authorized to use this\
+            \ endpoint"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiError"
+    post:
+      tags:
+      - Orders (DOMS)
+      summary: Create order
+      description: ""
+      operationId: addOrder
+      requestBody:
+        description: Order object supplied by your shop instance.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderForCreation"
+        required: true
+      responses:
+        "201":
+          description: The order was successfully created. The Location header contains
+            the URL of the order.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "400":
+          description: Invalid input. See response for details
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Your user is not allowed to operate against this API instance
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiError"
+        "403":
+          description: "Your user, although recognized, is not authorized to use this\
+            \ endpoint"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiError"
+  /api/orders/{orderId}:
+    get:
+      tags:
+      - Orders (DOMS)
+      summary: Get order
+      description: ""
+      operationId: getOrder
+      parameters:
+      - name: orderId
+        in: path
+        description: ID of order you want to get
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Order was found & you were allowed to access it. The result
+            is in the body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "401":
+          description: Your user is not allowed to operate against this API instance
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiError"
+        "403":
+          description: "Your user, although recognized, is not authorized to use this\
+            \ endpoint"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiError"
+        "404":
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiError"
+    patch:
+      tags:
+      - Orders (DOMS)
+      summary: Update order
+      description: ""
+      operationId: updateOrder
+      parameters:
+      - name: orderId
+        in: path
+        description: ID of Order you want to patch
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: Request body for updating an order
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderForUpdate"
+        required: true
+      responses:
+        "200":
+          description: Order was found & patch-set has been applied. The patched entity
+            is in the body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "401":
+          description: Your user is not allowed to operate against this API instance
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiError"
+        "403":
+          description: "Your user, although recognized, is not authorized to use this\
+            \ endpoint"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiError"
+        "404":
+          description: "Entity not found, for more information please look at details."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiError"
+components:
+  schemas:
+    AbstractArticle:
+      title: AbstractArticle
+      required:
+      - tenantArticleId
+      - title
+      type: object
+      properties:
+        titleLocalized:
+          description: The translations for the title of the product
+          allOf:
+          - $ref: "#/components/schemas/LocaleString"
+        customAttributes:
+          type: object
+          description: "Attributes that can be added to this entity. These attributes\
+            \ **cannot** be used within fulfillment processes, but enable you to attach\
+            \ custom data from your systems to fulfillmenttools entities."
+          nullable: true
+        imageUrl:
+          type: string
+          description: A web link to a picture of this article. Please make sure that
+            no authentication is required to fetch the image!
+        tenantArticleId:
+          type: string
+          description: This is a reference to an article number
+          example: "4711"
+        title:
+          type: string
+          description: The title of the product
+          example: Cologne Water
+        weight:
+          minimum: 0
+          type: number
+          description: weight value is in gram
+      description: AbstractArticle
+    AbstractArticleForCreation:
+      title: AbstractArticleForCreation
+      required:
+      - title
+      type: object
+      properties:
+        titleLocalized:
+          description: The translations for the title of the product
+          allOf:
+          - $ref: "#/components/schemas/LocaleString"
+        customAttributes:
+          type: object
+          description: "Attributes that can be added to this entity. These attributes\
+            \ **cannot** be used within fulfillment processes, but enable you to attach\
+            \ custom data from your systems to fulfillmenttools entities."
+          nullable: true
+        imageUrl:
+          type: string
+          description: A web link to a picture of this article. Please make sure that
+            no authentication is required to fetch the image!
+        tenantArticleId:
+          type: string
+          description: This is a reference to an article number
+          example: "4711"
+        title:
+          type: string
+          description: The title of the product
+          example: Cologne Water
+        weight:
+          minimum: 0
+          type: number
+          description: weight value is in gram
+      description: AbstractArticleForCreation
+    AbstractReason:
+      title: AbstractReason
+      required:
+      - action
+      - id
+      type: object
+      properties:
+        action:
+          type: string
+          description: The action this reason can be attached to.
+        id:
+          type: string
+          description: The id of the Reason
+      description: AbstractReason
+      xml:
+        name: AbstractReason
+      allOf:
+      - $ref: "#/components/schemas/AbstractReasonForCreation"
+      - $ref: "#/components/schemas/VersionedResource"
+    AbstractReasonForCreation:
+      title: AbstractReasonForCreation
+      required:
+      - reason
+      - reasonLocalized
+      type: object
+      properties:
+        reasonLocalized:
+          $ref: "#/components/schemas/LocaleString"
+        reason:
+          type: string
+          description: Text explaining the reason for a supported action.
+          example: Rerouted because of an issue in the Facility.
+      additionalProperties: false
+      description: AbstractReasonForCreation
+      xml:
+        name: AbstractReasonForCreation
+    Address:
+      title: Address
+      required:
+      - city
+      - country
+      - postalCode
+      - street
+      type: object
+      properties:
+        additionalAddressInfo:
+          type: string
+          example: "to care of: Mrs. Müller"
+        city:
+          pattern: ^.+$
+          type: string
+          example: Langenfeld
+        country:
+          pattern: "^[A-Z]{2}$"
+          type: string
+          description: A two-digit country code as per ISO 3166-1 alpha-2
+          example: DE
+        customAttributes:
+          type: object
+          description: "Attributes that can be added to the address. These attributes\
+            \ cannot be used within fulfillment processes, but it could be useful\
+            \ to have the informations carried here."
+        houseNumber:
+          pattern: ^.+$
+          type: string
+          example: 42a
+        phoneNumbers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Address_phoneNumbers"
+        postalCode:
+          pattern: ^.+$
+          type: string
+          example: "40764"
+        province:
+          pattern: ^.+$
+          type: string
+          example: NRW
+        street:
+          pattern: ^.+$
+          type: string
+          example: Hauptstr.
+      description: Address
+    AddressType:
+      title: AddressType
+      type: string
+      description: "Type of this address, used e.g. for communication with the carrier.\
+        \ Use POSTAL_ADDRESS for the address where the order should be shipped to,\
+        \ INVOICE_ADDRESS for the address where the invoice is sent to and PARCEL_LOCKER\
+        \ if a parcel locker is used for this order."
+      enum:
+      - POSTAL_ADDRESS
+      - PARCEL_LOCKER
+      - INVOICE_ADDRESS
+    ApiError:
+      title: ApiError
+      type: array
+      description: ApiError
+      xml:
+        name: ApiError
+      items:
+        $ref: "#/components/schemas/ErrorInner"
+    ArticleAttributeItem:
+      title: ArticleAttributeItem
+      required:
+      - key
+      - value
+      type: object
+      properties:
+        valueLocalized:
+          description: The translations for the key of the attribute. This can be
+            only filled with a descriptive category
+          allOf:
+          - $ref: "#/components/schemas/LocaleString"
+        keyLocalized:
+          description: The translations for the key of the attribute. This can be
+            only filled with a descriptive category. Excluding for %%subtitle%%
+          allOf:
+          - $ref: "#/components/schemas/LocaleString"
+        category:
+          type: string
+          description: |-
+            This category is used by OCFF to customize implemented processes.
+            Categorized attributes are used by various processes and tools
+            throughout our platform. For a complete list of possible categories
+            and the correct use of those please refer to the documentation.
+            Default value: miscellaneous
+          enum:
+          - descriptive
+          - miscellaneous
+          - pickingSequence
+          - customs
+          - insurance
+          - shop
+          - dimensions
+          - carrierService
+          - salesPrice
+        context:
+          description: Context for salesPrice category and valuePerUnit key. Can only
+            be set via Listing endpoints.
+          allOf:
+          - $ref: "#/components/schemas/ArticleAttributeItemContext"
+        key:
+          minLength: 1
+          type: string
+          description: |-
+            Providing the key %%subtitle%% (see example) here will cause the
+            value to appear for example in the App directly under the title.
+            With all other attributes also the key will be displayed in the
+             clients.
+          example: '%%subtitle%%'
+        priority:
+          maximum: 1001
+          minimum: 1
+          type: integer
+          description: |-
+            This value gives the priority in the respective attribute category.
+            The lower the value the higher is the priority, e.g. priority 1 is
+            higher than priority 10. Attributes that have the highest priority
+            might be selected for display in different articles of OCFF. Default
+            Value is 1001. For details please contact the product owners.
+          format: int64
+          example: 100
+        type:
+          type: string
+          description: The type of the attribute.
+          default: STRING
+          enum:
+          - STRING
+          - NUMBER
+          - CURRENCY
+          - BOOLEAN
+        value:
+          minLength: 1
+          type: string
+          example: 585er Gold
+      description: ArticleAttributeItem
+    ArticleAttributeItemContext:
+      title: ArticleAttributeItemContext
+      required:
+      - type
+      - value
+      type: object
+      properties:
+        type:
+          type: string
+          description: Indicates the entity type the value refers to.
+          enum:
+          - FACILITY_GROUP
+          - FACILITY
+        value:
+          minLength: 1
+          type: string
+          description: Holds the reference to the entity the attribute refers to.
+      description: ArticleAttributeItemContext
+    ArticleItem:
+      title: ArticleItem
+      required:
+      - quantity
+      - tenantArticleRef
+      type: object
+      properties:
+        quantity:
+          minimum: 1
+          type: number
+        tenantArticleRef:
+          type: string
+      additionalProperties: false
+      description: ArticleItem
+    CancelationReason:
+      title: CancelationReason
+      required:
+      - action
+      type: object
+      properties:
+        action:
+          type: string
+          enum:
+          - CANCELATION
+      description: CancelationReason
+      xml:
+        name: CancelationReason
+      allOf:
+      - $ref: "#/components/schemas/AbstractReason"
+    CarrierProductCategory:
+      title: CarrierProductCategory
+      type: string
+      description: "Desired product class to choose when ordering a label, this is\
+        \ not a carrier specific value"
+      enum:
+      - STANDARD
+      - EXPRESS
+      - VALUE
+      - FORWARDING
+    CarrierServices:
+      title: CarrierServices
+      type: string
+      description: Services which should be booked from carrier
+      example: SIGNATURE
+      enum:
+      - SIGNATURE
+      - CUSTOMER_SIGNATURE
+      - ADULT_SIGNATURE
+      - SATURDAY_DELIVERY
+      - IDENTITY_CHECK_COMPANY
+      - IDENTITY_CHECK_PRIVATE
+      - ADDITIONAL_TRANSPORTATION_INSURANCE
+    CollectDelivery:
+      title: CollectDelivery
+      type: object
+      properties:
+        facilityRef:
+          type: string
+          description: Reference to the facility where the consumer expects to collect
+            the items
+        paid:
+          type: boolean
+          description: Indicates if the order is already paid.
+          default: false
+        provisioningTime:
+          type: string
+          description: The point in time by which the order is supposed to be provisioned.
+          format: date-time
+          example: 2020-02-03T08:45:50.525Z
+        supplyingFacilities:
+          type: array
+          description: '@deprecated Use supplyingFacilitiesConfigurations'
+          deprecated: true
+          items:
+            type: string
+            description: Reference of a Facility.
+            example: 928f3730-bc48-4d85-b83f-3fd86b776178
+        supplyingFacilitiesConfigurations:
+          type: array
+          description: References of facility that could supply contents of the order
+            to another facility with specific configuration of its usage
+          items:
+            $ref: "#/components/schemas/SupplyingFacilityConfiguration"
+        tenantFacilityId:
+          type: string
+          description: Reference to the facility where the consumer expects to collect
+            the items.
+      description: CollectDelivery
+      anyOf:
+      - required:
+        - facilityRef
+      - required:
+        - tenantFacilityId
+    ConsumerAddress:
+      title: ConsumerAddress
+      type: object
+      properties:
+        addressType:
+          $ref: "#/components/schemas/AddressType"
+        companyName:
+          type: string
+          example: Speedy Boxales Ltd.
+        coordinates:
+          $ref: "#/components/schemas/Coordinates"
+        email:
+          minLength: 1
+          type: string
+          format: email
+          example: test@try.de
+        firstName:
+          type: string
+          example: Maxine
+        lastName:
+          type: string
+          example: Muller
+        personalTitle:
+          type: string
+          example: Dr.
+        salutation:
+          type: string
+          example: Frau
+      description: ConsumerAddress
+      allOf:
+      - $ref: "#/components/schemas/Address"
+    Coordinates:
+      title: Coordinates
+      required:
+      - lat
+      - lon
+      type: object
+      properties:
+        lat:
+          type: number
+          description: Latitude value
+          example: 50.937531
+        lon:
+          type: number
+          description: Longitude value
+          example: 6.960279
+      description: "Coordinates of the WGS84 geodetic reference system in Mercator\
+        \ projection, as used e.g. by the Google Maps API"
+    CustomServiceDefinition:
+      title: CustomServiceDefinition
+      type: object
+      properties:
+        additionalInformation:
+          type: array
+          description: Additional information necessary to fulfil the custom service
+          items:
+            $ref: "#/components/schemas/CustomServiceDefinition_additionalInformation"
+        customAttributes:
+          type: object
+          description: "Attributes that can be added to the consumer. These attributes\
+            \ cannot be used within fulfillment processes, but it could be useful\
+            \ to have the informations carried here."
+        customServiceRef:
+          type: string
+          description: A reference to the custom service to be applied to the orderline
+            items
+        isBundled:
+          type: boolean
+          description: if true all articles below this service are intrpreted as a
+            bundle
+        tenantCustomServiceId:
+          type: string
+          description: The id of the tenant specific custom service
+      description: CustomServiceDefinition
+    CustomServiceItem:
+      title: CustomServiceItem
+      required:
+      - articleItems
+      - customServiceDefinition
+      - customServiceItems
+      - id
+      type: object
+      properties:
+        customServiceItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/CustomServiceItem"
+        id:
+          type: string
+      description: CustomServiceItem
+      allOf:
+      - $ref: "#/components/schemas/CustomServiceItemForCreation"
+    CustomServiceItemForCreation:
+      title: CustomServiceItemForCreation
+      required:
+      - articleItems
+      - customServiceDefinition
+      - customServiceItems
+      type: object
+      properties:
+        articleItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArticleItem"
+        customServiceDefinition:
+          $ref: "#/components/schemas/CustomServiceDefinition"
+        customServiceItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/CustomServiceItemForCreation"
+      additionalProperties: false
+      description: CustomServiceItemForCreation
+    CustomServiceReference:
+      title: CustomServiceReference
+      required:
+      - articleItems
+      - customServiceDefinition
+      - customServiceItems
+      - id
+      type: object
+      properties:
+        articleItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArticleItem"
+        customServiceDefinition:
+          $ref: "#/components/schemas/CustomServiceDefinition"
+        customServiceItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/CustomServiceItem"
+        id:
+          type: string
+      description: CustomServiceReference
+    CustomServiceReferenceForCreation:
+      title: CustomServiceReferenceForCreation
+      required:
+      - articleItems
+      - customServiceDefinition
+      - customServiceItems
+      type: object
+      properties:
+        articleItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArticleItem"
+        customServiceDefinition:
+          $ref: "#/components/schemas/CustomServiceDefinition"
+        customServiceItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/CustomServiceItemForCreation"
+      additionalProperties: false
+      description: CustomServiceReferenceForCreation
+    DeliveryEvent:
+      title: DeliveryEvent
+      required:
+      - deliveryTarget
+      - deliveryTrigger
+      properties:
+        deliveryTarget:
+          $ref: "#/components/schemas/DeliveryTarget"
+        deliveryTrigger:
+          type: string
+          enum:
+          - DEFAULT
+      description: DeliveryEvent
+    DeliveryPreferences:
+      title: DeliveryPreferences
+      type: object
+      properties:
+        collect:
+          maxItems: 1
+          type: array
+          items:
+            $ref: "#/components/schemas/CollectDelivery"
+        reservationPreferences:
+          $ref: "#/components/schemas/DeliveryReservationPreferences"
+        shipping:
+          $ref: "#/components/schemas/DeliveryPreferencesShipping"
+        sourcingOptionRefs:
+          type: array
+          description: Id of the SourcingOptions
+          items:
+            type: string
+            description: Reference of a SourcingOptions
+            example: 928f3730-bc48-4d85-b83f-3fd86b776178
+        supplyingFacilities:
+          type: array
+          description: '@deprecated Use supplyingFacilities under collect'
+          items:
+            type: string
+            description: Reference of a Facility
+            example: 928f3730-bc48-4d85-b83f-3fd86b776178
+        targetTime:
+          type: string
+          description: At which time the result is expected.
+          format: date-time
+          example: 2020-02-03T09:45:51.525Z
+      additionalProperties: false
+      description: DeliveryPreferences
+    DeliveryPreferencesShipping:
+      title: DeliveryPreferencesShipping
+      type: object
+      properties:
+        carrierProductCategory:
+          $ref: "#/components/schemas/CarrierProductCategory"
+        desiredDeliveryTime:
+          type: string
+          format: date-time
+          example: 2020-02-03T09:45:51.525Z
+        preferredCarriers:
+          type: array
+          items:
+            $ref: "#/components/schemas/PreferredCarrier"
+        preferredCarriersWithProduct:
+          type: array
+          items:
+            $ref: "#/components/schemas/PreferredCarrierWithProduct"
+        preselectedFacilities:
+          type: array
+          items:
+            $ref: "#/components/schemas/PreselectedFacility"
+        serviceLevel:
+          type: string
+          description: "DELIVERY: The parcel will reach the recipient according to\
+            \ the cycle time of the carrier, typically 1-3 days when shipping nationaly.\
+            \ SAMEDAY: The parcel will reach the recipient the same day when ordering."
+          enum:
+          - DELIVERY
+          - SAMEDAY
+      description: DeliveryPreferencesShipping
+    DeliveryReservationMode:
+      title: DeliveryReservationMode
+      type: string
+      description: DeliveryReservationMode
+      enum:
+      - SCHEDULED
+      - ASAP
+      - ALAP
+    DeliveryReservationPreferences:
+      title: DeliveryReservationPreferences
+      required:
+      - mode
+      type: object
+      properties:
+        mode:
+          $ref: "#/components/schemas/DeliveryReservationMode"
+        reservationTime:
+          type: string
+          format: date-time
+          example: 2020-02-03T09:45:51.525Z
+      description: DeliveryReservationPreferences
+    DeliveryTarget:
+      title: DeliveryTarget
+      type: string
+      description: The destination for a delivery
+      enum:
+      - SHIP_TO_STORE
+      - SHIP_TO_CUSTOMER
+    ErrorInner:
+      title: ErrorInner
+      required:
+      - summary
+      type: object
+      properties:
+        description:
+          type: string
+          example: "Missing attributes were name, address, items"
+        requestVersion:
+          type: integer
+          description: The version provided within an invalid request.
+          format: int64
+          example: 41
+        summary:
+          type: string
+          example: One or more mandatory attributes were not provided.
+        version:
+          type: integer
+          format: int64
+          example: 42
+      description: ErrorInner
+    LocaleString:
+      title: LocaleString
+      type: object
+      additionalProperties:
+        type: string
+      description: "Provides Localized values. The key is the locale, the value is\
+        \ the translation. https://docs.fulfillmenttools.com/documentation/developer-docs/api/core-concepts/localization"
+      example:
+        de_DE: Wert
+        en_US: Value
+        ru_RU: значение
+    MeasurementValidation:
+      title: MeasurementValidation
+      properties:
+        overPickHardTolerancePercentage:
+          minimum: 0
+          type: number
+          description: Allowed hard over pick deviation tolerance.
+          example: 20
+        overPickSoftTolerancePercentage:
+          minimum: 0
+          type: number
+          description: Allowed soft over pick deviation tolerance.
+          example: 15
+        shortPickHardTolerancePercentage:
+          maximum: 100
+          minimum: 0
+          type: number
+          description: Allowed hard short pick deviation tolerance.
+          example: 15
+        shortPickSoftTolerancePercentage:
+          maximum: 100
+          minimum: 0
+          type: number
+          description: Allowed soft short pick deviation tolerance.
+          example: 10
+      description: MeasurementValidation
+    Order:
+      title: Order
+      description: Order
+      xml:
+        name: Order
+      allOf:
+      - $ref: "#/components/schemas/OrderForCreation"
+      - $ref: "#/components/schemas/VersionedResource"
+      - required:
+        - id
+        - orderLineItems
+        - processId
+        - status
+        type: object
+        properties:
+          anonymized:
+            type: boolean
+            description: Indicates if gdpr related data was anonymized
+            example: false
+          cancelationReason:
+            $ref: "#/components/schemas/CancelationReason"
+          customServices:
+            minItems: 1
+            type: array
+            items:
+              $ref: "#/components/schemas/CustomServiceReference"
+          id:
+            type: string
+            description: The id of this order. It is generated during creation automatically
+              and suits as the primary identifier of the described entity.
+            example: LGMl2DuvPnfPoSHhYFOm
+          orderLineItems:
+            type: array
+            items:
+              $ref: "#/components/schemas/OrderLineItem"
+          paymentInfo:
+            $ref: "#/components/schemas/OrderPaymentInfo"
+          processId:
+            type: string
+            description: Id of the global process related to this entity. For example
+              used for starting the GDPR process and others.
+          schemaVersion:
+            type: number
+          status:
+            $ref: "#/components/schemas/OrderStatus"
+          updateDetails:
+            minItems: 1
+            type: array
+            items:
+              $ref: "#/components/schemas/OrderUpdateDetail"
+    OrderArticleAttributeItem:
+      title: OrderArticleAttributeItem
+      description: OrderArticleAttributeItem
+      allOf:
+      - $ref: "#/components/schemas/ArticleAttributeItem"
+    OrderForCreation:
+      title: OrderForCreation
+      required:
+      - consumer
+      - orderDate
+      - orderLineItems
+      type: object
+      properties:
+        consumer:
+          $ref: "#/components/schemas/OrderForCreationConsumer"
+        customAttributes:
+          type: object
+          description: "Attributes that can be added to the order. These attributes\
+            \ cannot be used within fulfillment processes, but it could be useful\
+            \ to have the informations carried here."
+        customServices:
+          minItems: 1
+          type: array
+          items:
+            $ref: "#/components/schemas/CustomServiceReferenceForCreation"
+        deliveryPreferences:
+          $ref: "#/components/schemas/DeliveryPreferences"
+        orderDate:
+          type: string
+          description: The date this order was created at the supplying system.
+          format: date-time
+          example: 2020-02-03T08:45:50.525Z
+        orderLineItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderLineItemForCreation"
+        paymentInfo:
+          $ref: "#/components/schemas/OrderPaymentInfoForCreation"
+        promisesOptions:
+          $ref: "#/components/schemas/OrderPromisesOptions"
+        source:
+          type: object
+          oneOf:
+          - $ref: "#/components/schemas/SourceRef"
+          - $ref: "#/components/schemas/TenantSourceId"
+        status:
+          $ref: "#/components/schemas/OrderStatus"
+        statusReasons:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderStatusReason"
+        stickers:
+          maxItems: 100
+          minItems: 1
+          type: array
+          items:
+            $ref: "#/components/schemas/Sticker"
+        tenantOrderId:
+          type: string
+          description: "Field can be used as a reference number in foreign systems,\
+            \ for example as a reference to the source system's identifier for this\
+            \ order."
+          example: R456728546
+        tags:
+          minItems: 1
+          type: array
+          items:
+            $ref: "#/components/schemas/TagReference"
+      additionalProperties: false
+      description: OrderForCreation
+      xml:
+        name: Order
+    OrderForCreationConsumer:
+      title: OrderForCreationConsumer
+      type: object
+      properties:
+        addresses:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConsumerAddress"
+        consumerId:
+          type: string
+          description: The id of the consumer.
+          example: e4213a07-f563-46a3-b1ba-4dfeb6abe82a
+        customAttributes:
+          type: object
+          description: "Attributes that can be added to the consumer. These attributes\
+            \ cannot be used within fulfillment processes, but it could be useful\
+            \ to have the informations carried here."
+        email:
+          type: string
+          description: |
+            @deprecated The email address of the consumer. Use email in addresses array
+          format: email
+          example: max@speedyboxales.com
+          deprecated: true
+        facilityRef:
+          type: string
+          description: "ID of the facility, if the recipient is a facility."
+          example: e4213a07-f563-46a3-b1ba-4dfeb6abe82a
+        tenantFacilityId:
+          type: string
+          description: "tenantFacilityId of the facility, if the recipient is a facility"
+      description: OrderForCreationConsumer
+    OrderForUpdate:
+      title: OrderForUpdate
+      required:
+      - version
+      type: object
+      properties:
+        comment:
+          type: string
+          description: A comment for updating this order.
+        consumer:
+          $ref: "#/components/schemas/OrderForCreationConsumer"
+        customAttributes:
+          type: object
+          description: "Attributes that can be added to the order. These attributes\
+            \ cannot be used within fulfillment processes, but it could be useful\
+            \ to have the informations carried here."
+          nullable: true
+        orderLineItems:
+          type: array
+          description: "Updates the order line items of the order. All order lines\
+            \ must be included, only the included lines will remain after the update."
+          nullable: true
+          items:
+            $ref: "#/components/schemas/OrderLineItemForUpdate"
+        preferredHandlingTime:
+          type: string
+          description: Updates the preferred handling time for ship-from-store orders
+            or the provisioning time for click-and-collect orders.
+          format: date-time
+          example: 2025-01-15T00:00:00Z
+        version:
+          type: integer
+          description: The version of the document to be used in optimistic locking
+            mechanisms.
+          format: int64
+          example: 42
+      additionalProperties: false
+      description: OrderForUpdate
+    OrderLineItem:
+      title: OrderLineItem
+      description: OrderLineItem
+      allOf:
+      - $ref: "#/components/schemas/OrderLineItemForCreation"
+      - required:
+        - id
+        type: object
+        properties:
+          id:
+            type: string
+            description: The id of this orderline. It is generated during creation
+              automatically by the API and suits as the primary identifier of the
+              described line.
+            example: LGMl2DuvPnfPoSHhYFOm
+    OrderLineItemArticle:
+      title: OrderLineItemArticle
+      description: OrderLineItemArticle
+      xml:
+        name: OrderLineItemArticle
+      allOf:
+      - $ref: "#/components/schemas/AbstractArticle"
+      - type: object
+        properties:
+          attributes:
+            type: array
+            description: |-
+              Attributes are used in the fulfillmenttools platform in order to impose a certain degree of customization to a process, such as improving the appearance in the platform and clients.
+              Details about usage can be found <a href="https://docs.fulfillmenttools.com/documentation/developer-docs/api/core-concepts/customization-via-attributes">here</a>
+            items:
+              $ref: "#/components/schemas/OrderArticleAttributeItem"
+          customAttributes:
+            type: object
+            description: |
+              @deprecated Please use customAttributes in OrderLineItem.
+            nullable: true
+            deprecated: true
+    OrderLineItemArticleForUpdate:
+      title: OrderLineItemArticleForUpdate
+      description: OrderLineItemArticleForUpdate
+      xml:
+        name: OrderLineItemArticleForUpdate
+      allOf:
+      - $ref: "#/components/schemas/AbstractArticleForCreation"
+      - type: object
+        properties:
+          attributes:
+            type: array
+            description: |-
+              Attributes are used in the fulfillmenttools platform in order to impose a certain degree of customization to a process, such as improving the appearance in the platform and clients.
+              Details about usage can be found <a href="https://docs.fulfillmenttools.com/documentation/developer-docs/api/core-concepts/customization-via-attributes">here</a>
+            items:
+              $ref: "#/components/schemas/OrderArticleAttributeItem"
+          customAttributes:
+            type: object
+            description: |
+              @deprecated Please use customAttributes in OrderLineItem.
+            nullable: true
+            deprecated: true
+    OrderLineItemForCreation:
+      title: OrderLineItemForCreation
+      required:
+      - article
+      - quantity
+      type: object
+      properties:
+        allowedSubstitutes:
+          type: array
+          description: "Array of allowed substitutes for given orderLineItem. If an\
+            \ empty array is provided, no substitute is allowed for this orderLineItem.\
+            \ If allowedSubstitutes is not provided, this configured substitutes on\
+            \ listing level will be available"
+          items:
+            $ref: "#/components/schemas/Substitute"
+        article:
+          $ref: "#/components/schemas/OrderLineItemArticle"
+        customAttributes:
+          type: object
+          description: "Attributes that can be added to the orderline. These attributes\
+            \ cannot be used within fulfillment processes, but it could be useful\
+            \ to have the informations carried here."
+        measurementUnitKey:
+          type: string
+          description: Identifier for items unit of measurement.
+          example: liter
+        measurementValidation:
+          $ref: "#/components/schemas/MeasurementValidation"
+        quantity:
+          minimum: 1
+          type: integer
+          description: quantity of the specific article that has been ordered
+          format: int64
+          example: 21
+        scannableCodes:
+          type: array
+          items:
+            type: string
+            description: "Codes, that identify the article"
+        secondaryMeasurementUnitKey:
+          type: string
+          description: Secondary identifier for items unit of measurement.
+          example: liter
+        secondaryQuantity:
+          minimum: 0
+          type: integer
+          description: Secondary quantity of the specific article that has been ordered
+          format: int64
+          example: 21
+        shopPrice:
+          type: number
+          description: |
+            @deprecated price per piece of this line item Use attributes instead (see: <a href="https://docs.fulfillmenttools.com/documentation/developer-docs/api/core-concepts/customization-via-attributes">customization by attributes</a>)
+          example: 1200
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/TagReference"
+      additionalProperties: false
+      description: OrderLineItemForCreation
+    OrderLineItemForUpdate:
+      title: OrderLineItemForUpdate
+      properties:
+        article:
+          $ref: "#/components/schemas/OrderLineItemArticleForUpdate"
+        id:
+          type: string
+          description: The id of this order line item. It is generated during creation
+            automatically and suits as the primary identifier of the described entity.
+        quantity:
+          type: number
+          description: The quantity of this order line item.
+          example: 2
+      description: OrderLineItemForUpdate
+    OrderPaymentInfo:
+      title: OrderPaymentInfo
+      type: object
+      properties:
+        methodLocalized:
+          $ref: "#/components/schemas/LocaleString"
+        currency:
+          type: string
+          description: The currency in which the consumer paid with
+          example: EUR
+        method:
+          type: string
+          description: Localized value from methodLocalized
+          example: Credit Card
+      additionalProperties: false
+      description: OrderPaymentInfo
+    OrderPaymentInfoForCreation:
+      title: OrderPaymentInfoForCreation
+      type: object
+      properties:
+        methodLocalized:
+          $ref: "#/components/schemas/LocaleString"
+        currency:
+          type: string
+          description: The currency in which the consumer paid with
+          example: EUR
+      additionalProperties: false
+      description: OrderPaymentInfoForCreation
+    OrderPromisesOptions:
+      title: OrderPromisesOptions
+      required:
+      - validUntil
+      type: object
+      properties:
+        validUntil:
+          type: string
+          description: "The date the promised order will become invalid and is cancelled\
+            \ automatically, when not transformed into an actual order."
+          format: date-time
+          example: 2020-02-03T08:45:50.525Z
+      additionalProperties: false
+      description: OrderPromisesOptions
+      xml:
+        name: OrderPromisesOptions
+    OrderStatus:
+      title: OrderStatus
+      type: string
+      description: The state of the order. Initially it is OPEN.
+      enum:
+      - OPEN
+      - CANCELLED
+      - PROMISED
+      - LOCKED
+      - OBSOLETE
+    OrderStatusReason:
+      title: OrderStatusReason
+      required:
+      - reason
+      - status
+      properties:
+        reason:
+          type: string
+          description: The reason for setting this order status
+        status:
+          $ref: "#/components/schemas/OrderStatus"
+      description: Order Status Reason.
+    OrderUpdateDetail:
+      title: OrderUpdateDetail
+      required:
+      - changes
+      - created
+      type: object
+      properties:
+        changes:
+          $ref: "#/components/schemas/OrderUpdateDetailChanges"
+        comment:
+          type: string
+        created:
+          type: string
+          description: The date this update was done.
+          format: date-time
+          example: 2020-02-03T08:45:50.525Z
+        user:
+          type: string
+      description: OrderUpdateDetail
+    OrderUpdateDetailChanges:
+      title: OrderUpdateDetailChanges
+      type: object
+      properties:
+        consumer:
+          $ref: "#/components/schemas/OrderForCreationConsumer"
+        customAttributes:
+          type: object
+          description: "Attributes that can be added to the order. These attributes\
+            \ cannot be used within fulfillment processes, but it could be useful\
+            \ to have the informations carried here."
+          nullable: true
+        orderLineItems:
+          type: array
+          description: "Updates the order line items of the order. All order lines\
+            \ must be included, only the included lines will remain after the update."
+          nullable: true
+          items:
+            $ref: "#/components/schemas/OrderLineItemForUpdate"
+        preferredHandlingTime:
+          type: string
+          description: Updates the preferred handling time for ship-from-store orders
+            or the provisioning time for click-and-collect orders.
+          format: date-time
+          example: 2025-01-15T00:00:00Z
+      description: OrderUpdateDetailChanges
+    PreferredCarrier:
+      title: PreferredCarrier
+      type: string
+      description: Keys of the preferred carriers to handle out the order
+    PreferredCarrierWithProduct:
+      title: PreferredCarrierWithProduct
+      required:
+      - carrierKey
+      type: object
+      properties:
+        carrierKey:
+          type: string
+          example: DPD
+        carrierProduct:
+          type: string
+          example: WORLDWIDE
+        carrierServices:
+          type: array
+          items:
+            $ref: "#/components/schemas/CarrierServices"
+      additionalProperties: false
+      description: PreferredCarrierWithProduct
+    PreselectedFacility:
+      title: PreselectedFacility
+      type: object
+      properties:
+        facilityRef:
+          type: string
+          description: Reference to the facility which is supposed to fulfill the
+            order.
+        tenantFacilityId:
+          type: string
+          description: Reference to the facility which is supposed to fulfill the
+            order.
+      description: PreselectedFacility
+      anyOf:
+      - required:
+        - facilityRef
+      - required:
+        - tenantFacilityId
+    SourceRef:
+      title: SourceRef
+      required:
+      - sourceRef
+      type: object
+      properties:
+        sourceRef:
+          type: string
+      additionalProperties: false
+      description: SourceRef
+    Sticker:
+      title: Sticker
+      required:
+      - key
+      - nameLocalized
+      - priority
+      type: object
+      properties:
+        nameLocalized:
+          $ref: "#/components/schemas/LocaleString"
+        color:
+          type: string
+          description: optional color coding for the sticker
+          example: "#19b6b5"
+        key:
+          type: string
+          description: unique identifier
+          example: LGMl2DuvPnfPoSHhYFOm
+        name:
+          type: string
+          description: Translated display name
+          example: SomeName
+        priority:
+          maximum: 10000
+          minimum: 1
+          type: integer
+          description: priority of the given sticker
+          format: int64
+          example: 100
+      additionalProperties: false
+      description: Sticker
+    StrippedOrder:
+      title: StrippedOrder
+      description: StrippedOrder
+      allOf:
+      - $ref: "#/components/schemas/VersionedResource"
+      - required:
+        - id
+        - orderDate
+        - status
+        type: object
+        properties:
+          id:
+            type: string
+            description: The id of this order. It is generated during creation automatically
+              and suits as the primary identifier of the described entity.
+            example: LGMl2DuvPnfPoSHhYFOm
+          orderDate:
+            type: string
+            description: The date this order was created at the supplying system.
+            format: date-time
+            example: 2020-02-03T08:45:50.525Z
+          orderLineItems:
+            type: array
+            items:
+              $ref: "#/components/schemas/StrippedOrder_orderLineItems"
+          processRef:
+            type: string
+          status:
+            $ref: "#/components/schemas/OrderStatus"
+          stickers:
+            type: array
+            items:
+              $ref: "#/components/schemas/Sticker"
+    StrippedOrders:
+      title: StrippedOrders
+      type: object
+      properties:
+        orders:
+          type: array
+          items:
+            $ref: "#/components/schemas/StrippedOrder"
+        total:
+          type: integer
+          description: Total number of found entities for this query
+          example: 42
+      description: StrippedOrders
+    Substitute:
+      title: Substitute
+      required:
+      - tenantArticleId
+      - title
+      type: object
+      properties:
+        attributes:
+          maxItems: 40
+          type: array
+          items:
+            $ref: "#/components/schemas/SubstituteAttributeItem"
+        imageUrl:
+          type: string
+        measurementUnitKey:
+          type: string
+          description: Identifier for items unit of measurement.
+          example: liter
+        measurementValidation:
+          $ref: "#/components/schemas/MeasurementValidation"
+        priority:
+          minimum: 0
+          type: number
+          description: This field allows you to rank substitutes against each other.
+            The lowest number is the most preferrable substitute.
+        scannableCodes:
+          type: array
+          items:
+            type: string
+            description: "Strings, that identify the substitute article"
+        secondaryMeasurementUnitKey:
+          type: string
+          description: Identifier for items unit of measurement. E.g. measurementUnitKey
+            is pieces and secondaryQuantity is gram
+          example: gram
+        tenantArticleId:
+          type: string
+        title:
+          type: string
+      description: Substitute
+      xml:
+        name: Substitute
+    SubstituteAttributeItem:
+      title: SubstituteAttributeItem
+      description: SubstituteAttributeItem
+      allOf:
+      - $ref: "#/components/schemas/ArticleAttributeItem"
+    SupplyingFacilityConfiguration:
+      title: SupplyingFacilityConfiguration
+      required:
+      - deliveryEvents
+      properties:
+        deliveryEvents:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeliveryEvent"
+        facilityRef:
+          type: string
+          description: ID of the facility.
+        tenantFacilityId:
+          type: string
+          description: Reference to the facility.
+      description: SupplyingFacilityConfiguration
+      anyOf:
+      - required:
+        - facilityRef
+      - required:
+        - tenantFacilityId
+    TagReference:
+      title: TagReference
+      required:
+      - id
+      - value
+      properties:
+        id:
+          type: string
+        value:
+          type: string
+      description: TagReference
+    TenantSourceId:
+      title: TenantSourceId
+      required:
+      - tenantSourceId
+      type: object
+      properties:
+        tenantSourceId:
+          type: string
+      additionalProperties: false
+      description: TenantSourceId
+    VersionedResource:
+      title: VersionedResource
+      required:
+      - version
+      type: object
+      properties:
+        created:
+          type: string
+          description: The date this entity was created at the platform. This value
+            is generated by the service.
+          format: date-time
+          example: 2020-02-03T08:45:51.525Z
+        lastModified:
+          type: string
+          description: The date this entity was modified last. This value is generated
+            by the service.
+          format: date-time
+          example: 2020-02-03T09:45:51.525Z
+        version:
+          type: integer
+          description: The version of the document to be used in optimistic locking
+            mechanisms.
+          format: int64
+          example: 42
+      description: VersionedResource
+    Address_phoneNumbers:
+      required:
+      - type
+      - value
+      type: object
+      properties:
+        customAttributes:
+          type: object
+          description: "Attributes that can be added to the phonenumber. These attributes\
+            \ cannot be used within fulfillment processes, but it could be useful\
+            \ to have the informations carried here."
+        label:
+          type: string
+          description: "Can be used to give a description for the number, like \"\
+            private\", \"business number\", etc."
+        type:
+          type: string
+          enum:
+          - MOBILE
+          - PHONE
+        value:
+          type: string
+          description: The number itself. We do not enforce any format (yet).
+    CustomServiceDefinition_additionalInformation:
+      required:
+      - additionalInformationRef
+      type: object
+      properties:
+        additionalInformationRef:
+          type: string
+          description: A reference to the specific additional information of the custom
+            service
+        tenantAdditionalInformationId:
+          type: string
+          description: The id of the tenant specific additional information
+        value:
+          description: The value of the additional information
+          anyOf:
+          - type: string
+          - type: integer
+          - type: number
+          - type: boolean
+    StrippedOrder_orderLineItems:
+      required:
+      - quantity
+      - title
+      type: object
+      properties:
+        quantity:
+          minimum: 1
+          type: integer
+          description: quantity of the specific article that has been ordered
+          format: int64
+          example: 21
+        title:
+          type: string
+          example: Cologne Water
+  securitySchemes:
+    BearerToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
