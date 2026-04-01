@@ -19,8 +19,8 @@ val outputFile = "./stripped-fft-api.yaml"
 // Only keep these paths (empty = keep all)
 val pathsToKeep =
     setOf(
-        "/api/orders",
-        "/api/orders/{orderId}",
+        "/api/inboundprocesses/{inboundProcessId}",
+        "/api/inboundprocesses/{inboundProcessId}/purchaseorder",
     )
 
 // ===========================================
@@ -136,18 +136,31 @@ openAPI.components.schemas = pruned.toMutableMap()
 
 println("Pruned schemas from ${schemas.size} to ${pruned.size}")
 
-// Remove redundant components due to allOf flattening
+// Remove redundant components due to allOf flattening and anyOf simplification
 openAPI.components?.schemas?.values?.forEach { schema ->
 
-    val composed = schema.allOf ?: return@forEach
-
-    // If schema uses allOf and has inline properties
-    composed.forEach { part ->
+    // Remove duplicate discriminator property
+    schema.allOf?.forEach { part ->
         if (part is Schema<*>) {
-            val props = part.properties ?: return@forEach
-            if (props.containsKey("action")) {
+            val props = part.properties
+            if (props != null && props.containsKey("action")) {
                 props.remove("action")
             }
+        }
+    }
+
+    // Remove useless anyOf (only required constraints)
+    val anyOf = schema.anyOf
+    if (anyOf != null) {
+        val onlyRequiredConstraints =
+            anyOf.all { sub ->
+                sub is Schema<*> &&
+                    sub.required != null &&
+                    sub.properties == null
+            }
+
+        if (onlyRequiredConstraints) {
+            schema.anyOf = null
         }
     }
 }
@@ -159,4 +172,3 @@ File(outputFile).writeText(yaml)
 
 println("Cleaned OpenAPI written to $outputFile")
 println("Done.")
-
