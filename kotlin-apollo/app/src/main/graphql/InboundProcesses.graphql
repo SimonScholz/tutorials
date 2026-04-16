@@ -1,0 +1,21 @@
+query InboundProcesses($status:InboundProcessStatus!) {
+    inboundProcessesV2(filter: {status: {eq: $status}}) {
+        totalCount
+        edges {
+            node {
+                id
+                version
+                purchaseOrder {
+                    requestedItems {
+                        quantity {
+                            value
+                        }
+                    }
+                    requestedDate {
+                        value
+                    }
+                }
+            }
+        }
+    }
+}
