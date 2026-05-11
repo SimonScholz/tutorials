@@ -1,0 +1,740 @@
+openapi: 3.0.1
+info:
+  title: fulfillmenttools
+  description: This is the fulfillmenttools API documentation. Visit https://docs.fulfillmenttools.com/
+    for first steps.
+  termsOfService: http://swagger.io/terms/
+  contact:
+    name: fulfillmenttools
+    url: https://fulfillmenttools.com/
+    email: api@fulfillmenttools.com
+  version: VERSIONLESS
+servers:
+- url: "https://{tenant}.api.fulfillmenttools.com"
+  variables:
+    tenant:
+      default: your-tenant-name
+security:
+- BearerToken: []
+tags:
+- name: Orders (DOMS)
+  description: "DOMS endpoints to create, retrieve, update, and manage customer orders."
+- name: Orders Configuration (DOMS)
+  description: "DOMS endpoints to define and manage configuration settings related\
+    \ to order processing, such as defaults, business rules, and operational parameters\
+    \ that influence how orders are handled."
+- name: Routing Plans (DOMS)
+  description: Endpoints to get information out of the brain of our Distributed Order
+    Management System (DOMS).
+- name: Routing Plans Configuration (DOMS)
+  description: Endpoints for configuring routing plan handling.
+- name: Routing Strategy (DOMS)
+  description: Endpoints to configure the routing strategy of the DOMS.
+- name: Checkout Options (DOMS)
+  description: Endpoints used by shops to get the current available pickup stores
+    and available service levels like Same-Day delivery.
+- name: Sourcing Options (DOMS)
+  description: Endpoints for processing the routing decision logs.
+- name: Operative Process (Operations)
+  description: Get operative processes.
+- name: Picking (Operations)
+  description: These endpoints support the management of the picking process.
+- name: Picking Configuration (Operations)
+  description: "Endpoints to create, update and read pick jobs."
+- name: Services (Operations)
+  description: "Endpoints to create, update and read operative service jobs."
+- name: Services Configuration (Operations)
+  description: "Endpoints to create, update and read operative service jobs configuration."
+- name: Restowing (Operations)
+  description: Endpoints to manipulate restowing items.
+- name: Restowing Configuration (Operations)
+  description: Endpoints to manipulate restowing configuration.
+- name: Operative Container (Operations)
+  description: Endpoints to manipulate operative containers.
+- name: Packing (Operations)
+  description: These endpoints facilitate the packing process.
+- name: Packing Configuration (Operations)
+  description: "Endpoints to create, update and read packing configuration."
+- name: Handovers (Operations)
+  description: These endpoints manage the handover process.
+- name: Handovers Configuration (Operations)
+  description: "Endpoints to create, update and read handover configuration."
+- name: Shipments (Operations)
+  description: "Endpoints to create, update and read shipments and parcels."
+- name: Shipments Configuration (Operations)
+  description: "Endpoints to create, update and read shipping configuration."
+- name: Returns (Operations)
+  description: "Endpoints to create, update and read returns."
+- name: Returns Configuration (Operations)
+  description: "Endpoints to create, update and read returns configuration."
+- name: Stacks (Operations)
+  description: Endpoints to operate with stacks.
+- name: Carriers (Operations)
+  description: "Endpoints to create, update and read carriers."
+- name: Carriers Configuration (Operations)
+  description: "Endpoints to create, update and read carriers configuration."
+- name: Inbound (Inventory)
+  description: "Endpoints to create, update and read inbound processes and receipts."
+- name: Stowing (Inventory)
+  description: "Endpoints to create, update and read stow jobs."
+- name: Channel Availability (Inventory)
+  description: Endpoints to configure and get channel availability.
+- name: Stocks (Inventory)
+  description: "Endpoints to create, update and read stocks."
+- name: Stocks Configuration (Inventory)
+  description: "Endpoints to create, update and read stocks configuration."
+- name: Reservations (Inventory)
+  description: These endpoints handle the reservations.
+- name: Storage Locations (Inventory)
+  description: "Endpoints to create, update and read storage locations and zones."
+- name: Categories (Inventory)
+  description: "Endpoints to create, update and read categories."
+- name: Processes (Core)
+  description: A process groups all entities of an order.
+- name: External Actions (Core)
+  description: Endpoints to attach external actions to processes and append logs to
+    external actions.
+- name: Expiries (Core)
+  description: "Endpoints to read and modify expires, e.g. by extending the provisioning\
+    \ time."
+- name: Expiries Configuration (Core)
+  description: Endpoints to read and modify expires configuration.
+- name: Document Sets (Core)
+  description: "Endpoints to create, update and read document sets and files."
+- name: Custom Services (Core)
+  description: "Endpoints to create, update and read custom services."
+- name: Notification Center Configuration (Core)
+  description: Endpoints to configure the notification center.
+- name: Facilities (Core)
+  description: Facilities represent various locations that form part of the fulfillment
+    network.
+- name: Facility Groups (Core)
+  description: Facility groups combine one or multiple facilities into logical groups.
+- name: Listings (Core)
+  description: "Endpoints to create, update and read facility listings."
+- name: Measurement Units (Core)
+  description: "Endpoints to create, update and read measurement units."
+- name: Eventing (Core)
+  description: "Endpoints to create, update and read subscriptions."
+- name: User Management (Core)
+  description: "These endpoints enable the administration of user accounts, including\
+    \ creation, updating, read and deletion of user accounts."
+- name: Validations (Core)
+  description: Validate properties accepted by the fulfillmenttools platform.
+- name: Tags (Core)
+  description: "Endpoints to create, update and read tags."
+- name: Remote Configs (Core)
+  description: "Endpoints to create, update and read remote configs."
+- name: Configurations (Core)
+  description: Endpoints to update and read general configuration of the fulfillmenttools
+    platform.
+- name: Audits (Core)
+  description: Auditing helps determine who did what when.
+- name: Artifacts (Infrastructure)
+  description: Obtain artifact information provided by platform.
+- name: GraphQL (Infrastructure)
+  description: Access to fulfillmenttools platform GraphQL API.
+- name: Features (Infrastructure)
+  description: Configure features of the fulfillmenttools platform.
+- name: Health (Infrastructure)
+  description: Endpoints to get health status about the fulfillmenttools platform.
+- name: OIDC Configuration (Infrastructure)
+  description: Endpoints to configure external IDPs.
+paths:
+  /api/stocks:
+    get:
+      tags:
+      - Stocks (Inventory)
+      summary: List stocks
+      description: ""
+      operationId: getStocks
+      parameters:
+      - name: facilityRef
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: tenantFacilityId
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: tenantArticleId
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          maxItems: 500
+          type: array
+          items:
+            type: string
+      - name: locationRef
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          maxItems: 500
+          type: array
+          items:
+            type: string
+      - name: size
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: number
+          default: 25
+      - name: startAfterId
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Stocks
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StockPaginatedResult"
+        "401":
+          description: Your user is not allowed to operate against this API instance
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: "Your user, although recognized, is not authorized to use this"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      deprecated: false
+      x-fft-permissions:
+      - STOCK_READ
+    put:
+      tags:
+      - Stocks (Inventory)
+      summary: Update stocks
+      description: Update and create many stocks at once
+      operationId: upsertStocks
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StocksForUpsert"
+        required: true
+      responses:
+        "200":
+          description: Stock upsert result
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StockUpsertOperationResult"
+        "401":
+          description: Your user is not allowed to operate against this API instance
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: "Your user, although recognized, is not authorized to use this"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      deprecated: false
+      x-fft-permissions:
+      - STOCK_WRITE
+    post:
+      tags:
+      - Stocks (Inventory)
+      summary: Create stock
+      description: ""
+      operationId: createStock
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StockForCreation"
+        required: true
+      responses:
+        "201":
+          description: Stock was created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Stock"
+        "401":
+          description: Your user is not allowed to operate against this API instance
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: "Your user, although recognized, is not authorized to use this"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+      deprecated: false
+      x-fft-permissions:
+      - STOCK_WRITE
+components:
+  schemas:
+    ApiError:
+      title: ApiError
+      type: array
+      description: ApiError
+      xml:
+        name: ApiError
+      items:
+        $ref: "#/components/schemas/ErrorInner"
+    ErrorInner:
+      title: ErrorInner
+      required:
+      - summary
+      type: object
+      properties:
+        description:
+          type: string
+          example: "Missing attributes were name, address, items"
+        requestVersion:
+          type: integer
+          description: The version provided within an invalid request.
+          format: int64
+          example: 41
+        summary:
+          type: string
+          example: One or more mandatory attributes were not provided.
+        version:
+          type: integer
+          format: int64
+          example: 42
+      description: ErrorInner
+    FacilityRefSelector:
+      title: FacilityRefSelector
+      required:
+      - facilityRef
+      type: object
+      properties:
+        facilityRef:
+          minLength: 1
+          type: string
+          description: Resolves a facility by its reference. This is the preferred
+            way to resolve a facility.
+      description: FacilityRefSelector
+    PageInfo:
+      title: PageInfo
+      required:
+      - endCursor
+      - hasNextPage
+      - hasPreviousPage
+      - startCursor
+      type: object
+      properties:
+        endCursor:
+          type: string
+          description: The cursor to use to fetch the next page of items. Use with
+            parameter `after`.
+        hasNextPage:
+          type: boolean
+          description: "If true, there are more items after the current page."
+        hasPreviousPage:
+          type: boolean
+          description: "If true, there are more items before the current page."
+        startCursor:
+          type: string
+          description: The cursor to use to fetch the previous page of items.
+      description: PageInfo
+    Stock:
+      title: Stock
+      required:
+      - available
+      - created
+      - facility
+      - facilityRef
+      - facilityWideReserved
+      - id
+      - lastModified
+      - reserved
+      - serializedProperties
+      - tenantArticleId
+      - traits
+      - value
+      - version
+      type: object
+      properties:
+        available:
+          type: number
+        availableUntil:
+          type: string
+          description: defines until when a stock is included in the stock availability
+            as available and used for routing
+          format: date-time
+        conditions:
+          type: array
+          description: |-
+            Describes conditions of a stock
+                *`DEFECTIVE` - stock is defective, not usable for customer orders
+          items:
+            type: string
+            enum:
+            - DEFECTIVE
+        created:
+          type: string
+          format: date-time
+        customAttributes:
+          type: object
+          description: "Attributes that can be added to this entity. These attributes\
+            \ **cannot** be used within fulfillment processes, but enable you to attach\
+            \ custom data from your systems to fulfillmenttools entities."
+          nullable: true
+        facility:
+          $ref: "#/components/schemas/StockFacilityReferences"
+        facilityRef:
+          type: string
+          description: facility in which the stock is located
+        facilityWideReserved:
+          type: number
+          deprecated: true
+        id:
+          type: string
+        lastModified:
+          type: string
+          format: date-time
+        locationRef:
+          type: string
+          description: location on which the stock is placed
+        properties:
+          additionalProperties:
+            type: string
+          description: allow tracking of specific values such as expiry dates on a
+            set of items. They should describe physical identifiable properties of
+            the stock and are not meant to be used for metadata (see "customAttributes"
+            for that).
+          allOf:
+          - $ref: "#/components/schemas/StockPropertyPreset"
+        receiptDate:
+          type: string
+          description: "date-time when stock has entered the system, defaults to the\
+            \ creation date"
+          format: date-time
+        reserved:
+          type: number
+          description: amount of this stock reserved for customer orders
+        scannableCodes:
+          type: array
+          description: scannableCodes such as barcodes that identify this stock
+          items:
+            type: string
+        scores:
+          type: array
+          description: "stock with a high score can used preferably over stock with\
+            \ a lower score in routing, depending on configuration. The score can\
+            \ represent different attributes of the stock like zone, storage location,\
+            \ expiry date or receipt date."
+          items:
+            type: string
+        serializedProperties:
+          type: string
+          description: "properties object serialized as JSON string, sorted alphabetically\
+            \ by key"
+        tenantArticleId:
+          minLength: 1
+          type: string
+          description: tenantArticleId of the stock
+        tenantStockId:
+          type: string
+          description: tenantStockId is an optional identifier for the stock in the
+            tenant system.
+        traitConfig:
+          type: array
+          description: "defines the traits of the stock, overrules the storage location\
+            \ traits"
+          items:
+            $ref: "#/components/schemas/StorageLocationTraitConfigEntry"
+        traits:
+          type: array
+          description: 'provide information on how storage locations and stocks are
+            to be handled in operational processes. Can only be set via storageLocation. '
+          items:
+            type: string
+            enum:
+            - PICKABLE
+            - ACCESSIBLE
+            - KEEP_ON_ZERO
+            - OUTBOUND
+            - IN_MOTION
+        value:
+          minimum: 0
+          type: integer
+          format: int32
+        version:
+          type: number
+      description: Stock
+    StockFacilityReferences:
+      title: StockFacilityReferences
+      required:
+      - facilityRef
+      type: object
+      properties:
+        facilityRef:
+          type: string
+          description: facility in which the stock is located
+        tenantFacilityId:
+          type: string
+          description: tenantFacilityId in which the stock is located
+      description: StockFacilityReferences
+    StockForCreation:
+      title: StockForCreation
+      required:
+      - tenantArticleId
+      - value
+      type: object
+      properties:
+        availableUntil:
+          type: string
+          description: defines until when a stock is included in the stock availability
+            as available and used for routing
+          format: date-time
+        conditions:
+          type: array
+          description: |-
+            Describes conditions of a stock
+                *`DEFECTIVE` - stock is defective, not usable for customer orders
+          items:
+            type: string
+            enum:
+            - DEFECTIVE
+        customAttributes:
+          type: object
+          description: "Attributes that can be added to this entity. These attributes\
+            \ **cannot** be used within fulfillment processes, but enable you to attach\
+            \ custom data from your systems to fulfillmenttools entities."
+          nullable: true
+        facility:
+          description: Selector for the facility. Either a facility reference or a
+            tenant facility ID must be provided.
+          oneOf:
+          - $ref: "#/components/schemas/FacilityRefSelector"
+          - $ref: "#/components/schemas/TenantFacilityIdSelector"
+        facilityRef:
+          type: string
+          description: "facility in which the stock is located - fill with either\
+            \ facilityRef or tenantFacilityId - Deprecated: use facility object instead"
+          deprecated: true
+        locationRef:
+          type: string
+          description: location on which the stock is placed
+        properties:
+          description: allow tracking of specific values such as expiry dates on a
+            set of items. They should describe physical identifiable properties of
+            the stock and are not meant to be used for metadata (see "customAttributes"
+            for that).
+          allOf:
+          - $ref: "#/components/schemas/StockPropertyPreset"
+          - type: object
+            additionalProperties:
+              type: string
+        receiptDate:
+          type: string
+          description: "date-time when stock has entered the system, defaults to the\
+            \ creation date"
+          format: date-time
+        tenantArticleId:
+          minLength: 1
+          type: string
+          description: tenantArticleId of the stock
+        tenantFacilityId:
+          type: string
+          description: "tenantFacilityId in which the stock is located - fill with\
+            \ either facilityRef or tenantFacilityId - Deprecated: use facility object\
+            \ instead"
+          deprecated: true
+        tenantStockId:
+          type: string
+          description: tenantStockId is an optional identifier for the stock in the
+            tenant system.
+        traitConfig:
+          type: array
+          description: "defines the traits of the stock, overrules the storage location\
+            \ traits"
+          items:
+            $ref: "#/components/schemas/StorageLocationTraitConfigEntry"
+        value:
+          minimum: 0
+          type: integer
+          format: int32
+      description: StockForCreation
+    StockForUpsertUpdate:
+      title: StockForUpsertUpdate
+      required:
+      - id
+      - value
+      - version
+      type: object
+      properties:
+        conditions:
+          type: array
+          description: |-
+            Describes conditions of a stock
+                *`DEFECTIVE` - stock is defective, not usable for customer orders
+          items:
+            type: string
+            enum:
+            - DEFECTIVE
+        customAttributes:
+          type: object
+          description: "Attributes that can be added to this entity. These attributes\
+            \ **cannot** be used within fulfillment processes, but enable you to attach\
+            \ custom data from your systems to fulfillmenttools entities."
+          nullable: true
+        id:
+          type: string
+        locationRef:
+          type: string
+          nullable: true
+        tenantStockId:
+          type: string
+          description: tenantStockId is an optional identifier for the stock in the
+            tenant system.
+        traitConfig:
+          type: array
+          description: "defines the traits of the stock, overrules the storage location\
+            \ traits"
+          items:
+            $ref: "#/components/schemas/StorageLocationTraitConfigEntry"
+        value:
+          minimum: 0
+          type: integer
+          format: int32
+        version:
+          type: number
+      description: StockForUpsertUpdate
+    StockPaginatedResult:
+      title: StockPaginatedResult
+      required:
+      - pageInfo
+      - stocks
+      type: object
+      properties:
+        pageInfo:
+          description: Pagination information for the search result.
+          allOf:
+          - $ref: "#/components/schemas/PageInfo"
+        stocks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Stock"
+        total:
+          minimum: 0
+          type: number
+          description: "The total number of items matching the search criteria. Only\
+            \ filled, if withTotal is set to true in the search options."
+      description: StockPaginatedResult
+    StockPropertyPreset:
+      title: StockPropertyPreset
+      type: object
+      properties:
+        expiry:
+          type: string
+      description: StockPropertyPreset
+    StocksForUpsert:
+      title: StocksForUpsert
+      required:
+      - stocks
+      type: object
+      properties:
+        stocks:
+          maxItems: 500
+          type: array
+          description: "Please be sure to include each stock (by ID) only once, when\
+            \ updating. Otherwise the whole batch is rejected with an error."
+          items:
+            oneOf:
+            - $ref: "#/components/schemas/StockForCreation"
+            - $ref: "#/components/schemas/StockForUpsertUpdate"
+            - required:
+              - id
+              - value
+              type: object
+              not:
+                required:
+                - version
+              properties:
+                id:
+                  type: string
+                locationRef:
+                  type: string
+                  nullable: true
+                value:
+                  minimum: 0
+                  type: integer
+                  format: int32
+      description: StocksForUpsert
+    StockUpsertOperationResult:
+      title: StockUpsertOperationResult
+      required:
+      - status
+      - stock
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - UPDATED
+          - CREATED
+          - UNCHANGED
+        stock:
+          $ref: "#/components/schemas/Stock"
+      description: StockUpsertOperationResult
+    StorageLocationTraitConfigEntry:
+      title: StorageLocationTraitConfigEntry
+      required:
+      - enabled
+      - trait
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: whether the trait is enabled or not
+        trait:
+          type: string
+          description: |-
+            Describes what kind of actions this stock is available for
+                 * `PICKABLE`- The stock is available for picking
+                 * `ACCESSIBLE`- The stock is available for stock movements (stowing, inbound, etc)
+                 * `KEEP_ON_ZERO`- The stock will not be deleted when emptied
+                 * `OUTBOUND`- The stock is intended for outbound processes
+      description: StorageLocationTraitConfigEntry
+    TenantFacilityIdSelector:
+      title: TenantFacilityIdSelector
+      required:
+      - tenantFacilityId
+      type: object
+      properties:
+        tenantFacilityId:
+          minLength: 1
+          type: string
+          description: Resolves a facility by its tenantFacilityId.
+      description: TenantFacilityIdSelector
+  securitySchemes:
+    BearerToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

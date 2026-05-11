@@ -47,6 +47,12 @@ configureOpenApiClient(
     basePackage = "dev.simonscholz.api.client.fft",
 )
 
+configureOpenApiClient(
+    taskName = "generateStockFftApiClient",
+    spec = "$rootDir/stock-fft-api.yaml",
+    basePackage = "dev.simonscholz.api.stock.client.fft",
+)
+
 fun configureOpenApiClient(
     taskName: String,
     spec: String,

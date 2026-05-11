@@ -14,13 +14,12 @@ import java.io.File
 // ================= CONFIG =================
 
 val inputFile = "./raw-fft-api.yaml"
-val outputFile = "./stripped-fft-api.yaml"
+val outputFile = "./stock-fft-api.yaml"
 
 // Only keep these paths (empty = keep all)
 val pathsToKeep =
     setOf(
-        "/api/inboundprocesses/{inboundProcessId}",
-        "/api/inboundprocesses/{inboundProcessId}/purchaseorder",
+        "/api/stocks",
     )
 
 // ===========================================

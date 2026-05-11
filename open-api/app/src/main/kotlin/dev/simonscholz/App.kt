@@ -6,6 +6,7 @@ package dev.simonscholz
 import dev.simonscholz.api.client.fft.api.InboundInventoryApi
 import dev.simonscholz.api.client.fft.invoker.ApiClient
 import dev.simonscholz.api.client.fft.model.InboundProcessPurchaseOrderForUpsertDTO
+import dev.simonscholz.api.client.fft.model.InputRequestedDateDTO
 import io.github.cdimascio.dotenv.dotenv
 
 fun main() {
@@ -13,8 +14,9 @@ fun main() {
 
     val baseUri = dotenv["baseUri"]
     val bearerToken = dotenv["bearerToken"]
-    val inboundProcessId = "019d4885-734b-7706-bf59-cf49e231d8c9"
-    val newQty = 10
+    val inboundProcessId = "019d728c-7bf4-74ed-998a-54ca02999463"
+    val newQty = 15
+    val requestedDate: InputRequestedDateDTO? = null
 
     val authorizationHeader =
         mapOf(
@@ -47,7 +49,7 @@ fun main() {
             .requestedItems(
                 requestedItems,
             ).orderDate(purchaseOrder.orderDate)
-            .requestedDate(purchaseOrder.requestedDate)
+            .requestedDate(requestedDate ?: purchaseOrder.requestedDate)
 
     val response =
         api.upsertInboundProcessPurchaseOrder(

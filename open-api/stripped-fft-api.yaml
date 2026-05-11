@@ -761,6 +761,10 @@ components:
       properties:
         expiry:
           type: string
+        identifierNumber:
+          type: string
+        formattedOrderNumber:
+          type: string
       description: StockPropertyPreset
   securitySchemes:
     BearerToken:
