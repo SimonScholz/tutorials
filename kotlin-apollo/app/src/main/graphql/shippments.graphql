@@ -1,0 +1,21 @@
+query shipmentsV2February {
+    shipmentsV2(
+        filter: {and: {created: {gte: "2026-02-01T00:00:00Z", lte: "2026-02-28T00:00:00Z"}}}
+    ) {
+        totalCount
+        pageInfo {
+            startCursor
+            endCursor
+            hasNextPage
+        }
+        edges {
+            node {
+                tenantOrderId
+                carrier {
+                    key
+                }
+                created
+            }
+        }
+    }
+}

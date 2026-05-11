@@ -1,10 +1,16 @@
-query InboundProcesses($status:InboundProcessStatus!) {
-    inboundProcessesV2(filter: {status: {eq: $status}}) {
-        totalCount
+query InboundProcesses($status:InboundProcessStatus!, $after: String) {
+    inboundProcessesV2(filter: {status: {eq: $status}}, first: 100, after: $after) {
+        pageInfo {
+            hasPreviousPage
+            hasNextPage
+            startCursor
+            endCursor
+        }
         edges {
             node {
                 id
                 version
+                facilityRef
                 purchaseOrder {
                     requestedItems {
                         quantity {

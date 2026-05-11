@@ -6874,6 +6874,26 @@ enum ApiLifecycle {
   GA
 }
 
+"""
+Enumeration defining strategies for error catching and management within GraphQL operations.
+"""
+enum CatchTo {
+  """
+  Catch the error and map the position to a result type that can contain either a value or an error.
+  """
+  RESULT
+
+  """
+  Catch the error and map the position to a nullable type. This type will be null in case of errors, not distinguishing between semantic null or error-induced null but simpler for some scenarios.
+  """
+  NULL
+
+  """
+  Throw the error. Allows parent positions to attempt recovery using `RESULT` or `NULL`. If unhandled by any parent, parsing stops.
+  """
+  THROW
+}
+
 input StringEqFilter {
   eq: String
 
@@ -33348,6 +33368,7 @@ directive @semanticNonNull ("An array of integers specifying the zero-indexed de
 """
 Directs the GraphQL execution engine on how to handle errors at specified field levels using the 'levels' argument. This functionality enhances granular error management capabilities in complex data structures and queries.
 """
+
 directive @InContext ("This directive provides context variables such as the requested language. Alpha, not working everywhere yet." lang: SupportedLocale) on QUERY|MUTATION
 
 directive @permissions (requires: [PermissionKey!]!) on FIELD_DEFINITION
