@@ -1,2 +1,12 @@
-greeting:
-  message: "hello"
+quarkus:
+  datasource:
+    db-kind: postgresql
+    metrics:
+      enabled: true
+    jdbc:
+      telemetry: true
+    devservices:
+      enabled: true
+  flyway:
+    clean-at-start: true
+    migrate-at-start: true
