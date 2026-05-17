@@ -1,0 +1,3 @@
+mutation deleteStock($stockId: String!) {
+    deleteStock(input: {stockId: $stockId})
+}

@@ -22,7 +22,7 @@ suspend fun main() {
             .execute()
 
     if (response.errors.isNullOrEmpty()) {
-        println("inboundProcessesV2.totalCount=${response.data?.inboundProcessesV2?.totalCount}")
+        println("inboundProcessesV2.totalCount=${response.data?.inboundProcessesV2?.pageInfo}")
         println("inboundProcessesV2.edges=${response.data?.inboundProcessesV2?.edges}")
     } else {
         println("Errors: ${response.errors}")

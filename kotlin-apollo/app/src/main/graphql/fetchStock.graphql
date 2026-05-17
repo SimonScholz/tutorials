@@ -1,0 +1,16 @@
+query fetchStocks($tenantArticleId: String!, $facilityRef: String!) {
+  stocksV3(
+    filter: {tenantArticleId: {eq: $tenantArticleId}, facilityRef: {eq: $facilityRef}}
+  ) {
+    totalCount
+    edges {
+      node {
+        id
+        value
+        reserved
+        available
+        version
+      }
+    }
+  }
+}
