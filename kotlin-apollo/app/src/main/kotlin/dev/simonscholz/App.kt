@@ -21,10 +21,11 @@ suspend fun main() {
             .query(InboundProcessesQuery(status = InboundProcessStatus.OPEN))
             .execute()
 
-    if (response.errors.isNullOrEmpty()) {
+    if (response.errors.isNullOrEmpty() && response.exception == null) {
         println("inboundProcessesV2.totalCount=${response.data?.inboundProcessesV2?.pageInfo}")
         println("inboundProcessesV2.edges=${response.data?.inboundProcessesV2?.edges}")
     } else {
         println("Errors: ${response.errors}")
+        println("Exception: ${response.exception}")
     }
 }

@@ -23,13 +23,14 @@ suspend fun main() {
             .query(FetchStocksQuery(sku, facility))
             .execute()
 
-    if (response.errors.isNullOrEmpty()) {
+    if (response.errors.isNullOrEmpty() && response.exception == null) {
         println("StocksQuery.totalCount=${response.data?.stocksV3?.totalCount}")
         println("StocksQuery.edges=${response.data?.stocksV3?.edges}")
 
-        // deleteStock(response, apolloClient)
+        deleteStock(response, apolloClient)
     } else {
         println("Errors: ${response.errors}")
+        println("Exception: ${response.exception}")
     }
 }
 

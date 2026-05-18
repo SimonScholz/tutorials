@@ -27,8 +27,10 @@ fun fetchAllInboundProcesses(
                     .query(InboundProcessesQuery(status = status, after = nextCursor))
                     .execute()
             check(response.errors.isNullOrEmpty()) {
-                "GraphQL errors: ${response.errors}"
+                "GraphQL errors: ${response.errors}, Exception: ${response.exception}"
             }
+
+            response.exception?.let { throw it }
 
             val inboundProcesses =
                 requireNotNull(response.data?.inboundProcessesV2) {

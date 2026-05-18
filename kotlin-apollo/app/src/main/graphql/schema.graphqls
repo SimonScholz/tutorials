@@ -26,6 +26,11 @@ type Query {
   """
   limitationsForUserToCreate: RestrictionsForUserCreation!
 
+  """
+  Validate a password against the policy for a given set of roles. Does not persist anything — pure validation check.
+  """
+  validatePassword(input: ValidatePasswordInput!): PasswordValidationResult
+
   permissions("Number of items to return for forward pagination. Cannot be used with `last`. Default: 20." first: Int, "The cursor to start after for forward pagination. Cannot be used with `before` or `last`." after: String, "Number of items to return for backward pagination. Cannot be used with `first`. Default: 20." last: Int, "The cursor to start before for backward pagination. Cannot be used with `after` or `first`." before: String, filter: PermissionsFilter): PermissionEntitiesConnection!
 
   role(name: String!): Role
@@ -141,6 +146,10 @@ type Query {
 
   orderRecordsConfiguration: OrderRecordsConfiguration
 
+  routingJournal(id: ID!): RoutingJournal
+
+  routingJournals("Number of items to return for forward pagination. Cannot be used with `last`. Default: 20." first: Int, "The cursor to start after for forward pagination. Cannot be used with `before` or `last`." after: String, "Number of items to return for backward pagination. Cannot be used with `first`. Default: 20." last: Int, "The cursor to start before for backward pagination. Cannot be used with `after` or `first`." before: String, filter: RoutingJournalsFilter): RoutingJournalsConnection
+
   storageLocations(options: SearchOptions, "Number of items to return for forward pagination. Cannot be used with `last`. Default: 20." first: Int, "The cursor to start after for forward pagination. Cannot be used with `before` or `last`." after: String, "Number of items to return for backward pagination. Cannot be used with `first`. Default: 20." last: Int, "The cursor to start before for backward pagination. Cannot be used with `after` or `first`." before: String, filter: StorageLocationFilter, sort: [StorageLocationSort!]): StorageLocationConnectionV2
 
   stocksV3(options: SearchOptions, "Number of items to return for forward pagination. Cannot be used with `last`. Default: 20." first: Int, "The cursor to start after for forward pagination. Cannot be used with `before` or `last`." after: String, "Number of items to return for backward pagination. Cannot be used with `first`. Default: 20." last: Int, "The cursor to start before for backward pagination. Cannot be used with `after` or `first`." before: String, filter: StockFilter, sort: [StockSort!]): StockConnectionV2
@@ -189,6 +198,8 @@ type Query {
 
   tagsV2(options: SearchOptions, "Number of items to return for forward pagination. Cannot be used with `last`. Default: 20." first: Int, "The cursor to start after for forward pagination. Cannot be used with `before` or `last`." after: String, "Number of items to return for backward pagination. Cannot be used with `first`. Default: 20." last: Int, "The cursor to start before for backward pagination. Cannot be used with `after` or `first`." before: String, filter: TagFilter, sort: [TagSort!]): TagConnectionV2
 
+  orderRecordsV2(options: SearchOptions, "Number of items to return for forward pagination. Cannot be used with `last`. Default: 20." first: Int, "The cursor to start after for forward pagination. Cannot be used with `before` or `last`." after: String, "Number of items to return for backward pagination. Cannot be used with `first`. Default: 20." last: Int, "The cursor to start before for backward pagination. Cannot be used with `after` or `first`." before: String, filter: OrderRecordFilterV2, sort: [OrderRecordSort!]): OrderRecordsConnectionV2
+
   documentSet(documentSetRef: String!): DocumentSet
 
   chartConfiguration: ChartConfiguration!
@@ -235,7 +246,17 @@ type Query {
   """
   Get a list of all unique countries present in facility addresses for this tenant
   """
-  facilityCountries: [String!]!
+  facilityCountries(facilityType: FacilityType = MANAGED_FACILITY): [String!]!
+
+  """
+  Get paginated list of unique postal codes from facility addresses
+  """
+  facilityPostalCodes(first: Int = 25, after: String, searchTerm: String, facilityType: FacilityType = MANAGED_FACILITY): FacilityPostalCodesConnection
+
+  """
+  Get paginated list of unique cities from facility addresses
+  """
+  facilityCities(first: Int = 25, after: String, searchTerm: String, facilityType: FacilityType = MANAGED_FACILITY): FacilityCitiesConnection
 
   """
   Get a BaseFacility by its id. BaseFacilities can be either a ManagedFacility or a Supplier
@@ -543,21 +564,6 @@ type Query {
 
   transitTimeConfiguration: TransitTimeConfiguration!
 }
-
-"""
-The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
-"""
-scalar String
-
-"""
-The `Boolean` scalar type represents `true` or `false`.
-"""
-scalar Boolean
-
-"""
-The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"4"`) or integer (such as `4`) input value will be accepted as an ID.
-"""
-scalar ID
 
 type Brand {
   id: ID!
@@ -1189,6 +1195,11 @@ type Mutation {
   """
   updatePackingTargetContainerLineItemRecordableAttributes(input: UpdatePackingTargetContainerLineItemRecordableAttributesInput!): UpdatePackingTargetContainerLineItemRecordableAttributesResponse!
 
+  """
+  Updates the storage location of a packing target container. The storageLocationRef will be validated.
+  """
+  updatePackingTargetContainerStorageLocation(input: UpdatePackingTargetContainerStorageLocationInput!): UpdatePackingTargetContainerStorageLocationResponse!
+
   createLoadUnits(loadUnits: [LoadUnitCreateInput!]!): [LoadUnit!]!
 
   createLoadUnitForPickJob(pickJobRef: String!, pickingLoadUnitCreateInput: PickingLoadUnitCreateInput!): LoadUnit!
@@ -1361,6 +1372,8 @@ type Mutation {
   createItemReturnJob(itemReturnJobInput: ItemReturnJobInput!): ItemReturnJob! @deprecated(reason: "Use createItemReturnJobV2 instead.")
 
   createItemReturnJobV2(itemReturnJobInput: ItemReturnJobInput!): CreateItemReturnJobResponse!
+
+  replaceLineItemsOnItemReturnJob(replaceLineItemsOnItemReturnJobInput: ReplaceLineItemsOnItemReturnJobInput!): ReplaceLineItemsOnItemReturnJobResponse!
 
   startItemReturnJob(startItemReturnJobInput: StartItemReturnJobInput!): ItemReturnJob! @deprecated(reason: "Use startItemReturnJobV2 instead.")
 
@@ -2074,11 +2087,6 @@ type BaseCarrierConfiguration implements VersionedResource {
   """
   defaultPickUpTime: CarrierPickUpTime
 }
-
-"""
-The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point).
-"""
-scalar Float
 
 type CarrierPickUpTime {
   start: TimeStamp!
@@ -3129,6 +3137,12 @@ enum MandatoryShippingAttributeReferencedField {
 
   services_additionalTransportInsurance
 
+  services_noNeighborDelivery
+
+  services_handoverToRecipientOnly
+
+  services_identityAgeCheck18
+
   carrierInformation_shippingContainerNumber
 }
 
@@ -4022,9 +4036,9 @@ enum PermissionKey {
 
   ORDER_LINEITEM_WRITE
 
-  ORDER_LINEITEM_PRICING_READ
-
   ORDER_TOTAL_READ
+
+  LINE_ITEM_PRICING_READ
 
   LINE_ITEM_QUANTITY_INCREASE
 
@@ -4287,6 +4301,10 @@ enum PermissionKey {
   SAFETY_STOCK_READ
 
   SAFETY_STOCK_WRITE
+
+  EVENT_SCOPE_CONFIG_READ
+
+  EVENT_SCOPE_CONFIG_WRITE
 }
 
 type AvailableUserActions {
@@ -4418,6 +4436,53 @@ type RestrictionsForUserCreation {
   contextLimitations: [ContextLimitation!]
 }
 
+type PasswordValidationResult {
+  """
+  Whether the password passes validation
+  """
+  valid: Boolean!
+
+  """
+  List of validation errors, empty if valid
+  """
+  errors: [PasswordValidationError!]!
+}
+
+type PasswordValidationError {
+  """
+  Error code identifying the validation failure
+  """
+  code: PasswordValidationErrorCode!
+
+  """
+  Human-readable error message
+  """
+  message: String!
+
+  """
+  Required length for TOO_SHORT errors
+  """
+  requiredLength: Float
+}
+
+enum PasswordValidationErrorCode {
+  TOO_SHORT
+
+  BREACHED
+}
+
+input ValidatePasswordInput {
+  """
+  The password to validate
+  """
+  password: String!
+
+  """
+  Role names to determine the password policy
+  """
+  roleNames: [String!]!
+}
+
 type PermissionEntitiesConnection {
   pageInfo: PageInfo!
 
@@ -4476,6 +4541,8 @@ enum PermissionOperationType {
   LINEITEM_WRITE
 
   TOTAL_READ
+
+  PRICING_READ
 
   QUANTITY_INCREASE
 
@@ -4672,6 +4739,8 @@ enum PermissionSubGroupType {
   ZONE
 
   SAFETY_STOCK
+
+  EVENT_SCOPE_CONFIG
 }
 
 input PermissionsFilter {
@@ -5880,21 +5949,21 @@ input GQLWorkflowNodeInput {
 All workflow node types (domain + control)
 """
 enum WorkflowNode {
-  ORDER_DOMAIN
+  ORDER_MODULE
 
-  PICKING_DOMAIN
+  PICKING_MODULE
 
-  PACKING_DOMAIN
+  PACKING_MODULE
 
-  HANDOVER_DOMAIN
+  HANDOVER_MODULE
 
-  RESERVATION_DOMAIN
+  RESERVATION_MODULE
 
-  ROUTING_DOMAIN
+  ROUTING_MODULE
 
-  SHIPPING_DOMAIN
+  SHIPPING_MODULE
 
-  SERVICES_DOMAIN
+  SERVICES_MODULE
 
   CONDITION
 
@@ -8903,7 +8972,7 @@ type OrderRecordMonetaryValue {
   value: Int!
 
   """
-  The currency code
+  ISO 4217 currency code
   """
   currency: CurrencyCode!
 
@@ -9031,8 +9100,6 @@ type OrderRecordTotals {
   totalTaxes: OrderRecordMonetaryValue
 
   totalFees: OrderRecordMonetaryValue
-
-  totalDeposit: OrderRecordMonetaryValue
 
   total: OrderRecordMonetaryValue
 }
@@ -9306,6 +9373,76 @@ input OrderRecordsConfigurationInput {
   Flag indicating whether order records functionality is enabled.
   """
   isOrderRecordsEnabled: Boolean! = false
+}
+
+type RoutingJournal {
+  """
+  Unique identifier of this routing journal entry
+  """
+  id: ID!
+
+  """
+  Creation date of this routing journal entry
+  """
+  created: GraphQLISODateTime!
+
+  """
+  Reference to the associated process
+  """
+  processRef: String!
+
+  """
+  Reference to the associated order
+  """
+  orderRef: String!
+
+  """
+  Reference to the sourcing option used for routing
+  """
+  sourcingOptionRef: String!
+
+  """
+  Type of change recorded in this routing journal entry
+  """
+  changeType: RoutingJournalChangeType!
+
+  """
+  References to the routing plans associated with this journal entry
+  """
+  routingPlanRefs: [String!]!
+}
+
+"""
+Type of change recorded in this routing journal entry
+"""
+enum RoutingJournalChangeType {
+  INITIAL
+}
+
+type RoutingJournalsConnection {
+  pageInfo: PageInfo!
+
+  totalCount: Int!
+
+  edges: [RoutingJournalEdge!]!
+}
+
+type RoutingJournalEdge {
+  cursor: String!
+
+  node: RoutingJournal!
+}
+
+input RoutingJournalsFilter {
+  """
+  Reference to the associated process
+  """
+  processRef: String
+
+  """
+  Reference to the associated order
+  """
+  orderRef: String
 }
 
 type StorageLocationConnectionV2 {
@@ -9781,6 +9918,8 @@ input FacilityFilter {
   tags: FacilityTagsListFilter
 
   customAttributes: GraphQLJSON
+
+  referenced: FacilityReferenceFilter
 }
 
 input FacilityAddressFilter {
@@ -9867,6 +10006,14 @@ input FacilityTagsFilter {
   value: StringFilter
 
   id: StringFilter
+}
+
+input FacilityReferenceFilter {
+  facilityCarrierConnection: FacilityFacilityCarrierConnectionFilter
+}
+
+input FacilityFacilityCarrierConnectionFilter {
+  carrierKey: StringFilter
 }
 
 input FacilitySort {
@@ -10534,6 +10681,8 @@ input SearchProcessFilter {
 
   returnStatus: ProcessStatusEnumFilter
 
+  inventoryStatus: ProcessStatusEnumFilter
+
   facilityRefs: StringListFilter
 
   created: DateFilter
@@ -10612,6 +10761,18 @@ input ProcessDomainStatusesDomainStatusEnumFilter {
 input ProcessReferencedFilter {
   pickJob: ProcessReferencedPickJobFilter
 
+  handoverJob: ProcessReferencedHandoverJobFilter
+
+  returnJob: ProcessReferencedReturnJobFilter
+
+  serviceJob: ProcessReferencedServiceJobFilter
+
+  packJob: ProcessReferencedPackJobFilter
+
+  shipment: ProcessReferencedShipmentFilter
+
+  parcel: ProcessReferencedParcelFilter
+
   order: ProcessReferencedOrderFilter
 
   sticker: ProcessReferencedStickerFilter
@@ -10637,6 +10798,116 @@ input ProcessReferencedFilter {
 
 input ProcessReferencedPickJobFilter {
   shortId: StringSearchFilter
+
+  status: ProcessReferencedPickJobPickJobStatusEnumListFilter
+}
+
+input ProcessReferencedPickJobPickJobStatusEnumListFilter {
+  contains: ProcessReferencedPickJobPickJobStatusEnumFilter
+}
+
+input ProcessReferencedPickJobPickJobStatusEnumFilter {
+  eq: PickJobStatus
+
+  notEq: PickJobStatus
+
+  in: [PickJobStatus!]
+}
+
+input ProcessReferencedHandoverJobFilter {
+  status: ProcessReferencedHandoverJobHandoverJobStatusEnumListFilter
+}
+
+input ProcessReferencedHandoverJobHandoverJobStatusEnumListFilter {
+  contains: ProcessReferencedHandoverJobHandoverJobStatusEnumFilter
+}
+
+input ProcessReferencedHandoverJobHandoverJobStatusEnumFilter {
+  eq: HandoverJobStatus
+
+  notEq: HandoverJobStatus
+
+  in: [HandoverJobStatus!]
+}
+
+input ProcessReferencedReturnJobFilter {
+  status: ProcessReferencedReturnJobItemReturnJobStatusEnumListFilter
+}
+
+input ProcessReferencedReturnJobItemReturnJobStatusEnumListFilter {
+  contains: ProcessReferencedReturnJobItemReturnJobStatusEnumFilter
+}
+
+input ProcessReferencedReturnJobItemReturnJobStatusEnumFilter {
+  eq: ItemReturnJobStatus
+
+  notEq: ItemReturnJobStatus
+
+  in: [ItemReturnJobStatus!]
+}
+
+input ProcessReferencedServiceJobFilter {
+  status: ProcessReferencedServiceJobServiceJobStatusEnumListFilter
+}
+
+input ProcessReferencedServiceJobServiceJobStatusEnumListFilter {
+  contains: ProcessReferencedServiceJobServiceJobStatusEnumFilter
+}
+
+input ProcessReferencedServiceJobServiceJobStatusEnumFilter {
+  eq: ServiceJobStatus
+
+  notEq: ServiceJobStatus
+
+  in: [ServiceJobStatus!]
+}
+
+input ProcessReferencedPackJobFilter {
+  status: ProcessReferencedPackJobPackJobStatusEnumListFilter
+}
+
+input ProcessReferencedPackJobPackJobStatusEnumListFilter {
+  contains: ProcessReferencedPackJobPackJobStatusEnumFilter
+}
+
+input ProcessReferencedPackJobPackJobStatusEnumFilter {
+  eq: PackJobStatus
+
+  notEq: PackJobStatus
+
+  in: [PackJobStatus!]
+}
+
+input ProcessReferencedShipmentFilter {
+  status: ProcessReferencedShipmentShipmentStatusEnumListFilter
+}
+
+input ProcessReferencedShipmentShipmentStatusEnumListFilter {
+  contains: ProcessReferencedShipmentShipmentStatusEnumFilter
+}
+
+input ProcessReferencedShipmentShipmentStatusEnumFilter {
+  eq: ShipmentStatus
+
+  notEq: ShipmentStatus
+
+  in: [ShipmentStatus!]
+}
+
+input ProcessReferencedParcelFilter {
+  status: ProcessReferencedParcelParcelStatusEnumListFilter
+}
+
+input ProcessReferencedParcelParcelStatusEnumListFilter {
+  contains: ProcessReferencedParcelParcelStatusEnumFilter
+}
+
+input ProcessReferencedParcelParcelStatusEnumFilter {
+  eq: ParcelStatus
+
+  notEq: ParcelStatus
+
+  in: [ParcelStatus!]
 }
 
 input ProcessReferencedOrderFilter {
@@ -10742,7 +11013,11 @@ input ProcessSort {
 
   operativeStatus: SearchSortDirection
 
+  activeFacilityName: SearchSortDirection
+
   returnStatus: SearchSortDirection
+
+  inventoryStatus: SearchSortDirection
 }
 
 input ProcessReferencedSort {
@@ -11062,9 +11337,13 @@ input ParcelFilter {
 
   facilityRef: StringFilter
 
+  tenantOrderId: StringFilter
+
   shipmentRef: StringFilter
 
   items: ParcelItemsListFilter
+
+  result: ParcelResultFilter
 
   recipient: ParcelRecipientFilter
 
@@ -11097,6 +11376,10 @@ input ParcelItemsArticleFilter {
   title: StringSearchFilter
 
   tenantArticleId: StringSearchFilter
+}
+
+input ParcelResultFilter {
+  carrierTrackingNumber: StringFilter
 }
 
 input ParcelRecipientFilter {
@@ -11302,6 +11585,8 @@ input ProcessesAggregatesFilter {
 
   returnStatus: ProcessesAggregatesProcessStatusEnumFilter
 
+  inventoryStatus: ProcessesAggregatesProcessStatusEnumFilter
+
   facilityRefs: StringListFilter
 
   created: DateFilter
@@ -11352,6 +11637,8 @@ input ProcessesAggregatesDomainStatusesFilter {
 
   shipping: ProcessesAggregatesDomainStatusesDomainStatusEnumListFilter
 
+  parcel: ProcessesAggregatesDomainStatusesDomainStatusEnumListFilter
+
   picking: ProcessesAggregatesDomainStatusesDomainStatusEnumListFilter
 
   packing: ProcessesAggregatesDomainStatusesDomainStatusEnumListFilter
@@ -11377,6 +11664,20 @@ input ProcessesAggregatesDomainStatusesDomainStatusEnumFilter {
 
 input ProcessesAggregatesReferencedFilter {
   order: ProcessesAggregatesReferencedOrderFilter
+
+  pickJob: ProcessesAggregatesReferencedPickJobFilter
+
+  handoverJob: ProcessesAggregatesReferencedHandoverJobFilter
+
+  returnJob: ProcessesAggregatesReferencedReturnJobFilter
+
+  serviceJob: ProcessesAggregatesReferencedServiceJobFilter
+
+  packJob: ProcessesAggregatesReferencedPackJobFilter
+
+  shipment: ProcessesAggregatesReferencedShipmentFilter
+
+  parcel: ProcessesAggregatesReferencedParcelFilter
 
   sticker: ProcessesAggregatesReferencedStickerFilter
 
@@ -11427,6 +11728,118 @@ input ProcessesAggregatesReferencedOrderOrderStatusEnumFilter {
   notEq: OrderStatus
 
   in: [OrderStatus!]
+}
+
+input ProcessesAggregatesReferencedPickJobFilter {
+  status: ProcessesAggregatesReferencedPickJobPickJobStatusEnumListFilter
+}
+
+input ProcessesAggregatesReferencedPickJobPickJobStatusEnumListFilter {
+  contains: ProcessesAggregatesReferencedPickJobPickJobStatusEnumFilter
+}
+
+input ProcessesAggregatesReferencedPickJobPickJobStatusEnumFilter {
+  eq: PickJobStatus
+
+  notEq: PickJobStatus
+
+  in: [PickJobStatus!]
+}
+
+input ProcessesAggregatesReferencedHandoverJobFilter {
+  status: ProcessesAggregatesReferencedHandoverJobHandoverJobStatusEnumListFilter
+}
+
+input ProcessesAggregatesReferencedHandoverJobHandoverJobStatusEnumListFilter {
+  contains: ProcessesAggregatesReferencedHandoverJobHandoverJobStatusEnumFilter
+}
+
+input ProcessesAggregatesReferencedHandoverJobHandoverJobStatusEnumFilter {
+  eq: HandoverJobStatus
+
+  notEq: HandoverJobStatus
+
+  in: [HandoverJobStatus!]
+}
+
+input ProcessesAggregatesReferencedReturnJobFilter {
+  status: ProcessesAggregatesReferencedReturnJobItemReturnJobStatusEnumListFilter
+}
+
+input ProcessesAggregatesReferencedReturnJobItemReturnJobStatusEnumListFilter {
+  contains: ProcessesAggregatesReferencedReturnJobItemReturnJobStatusEnumFilter
+}
+
+input ProcessesAggregatesReferencedReturnJobItemReturnJobStatusEnumFilter {
+  eq: ItemReturnJobStatus
+
+  notEq: ItemReturnJobStatus
+
+  in: [ItemReturnJobStatus!]
+}
+
+input ProcessesAggregatesReferencedServiceJobFilter {
+  status: ProcessesAggregatesReferencedServiceJobServiceJobStatusEnumListFilter
+}
+
+input ProcessesAggregatesReferencedServiceJobServiceJobStatusEnumListFilter {
+  contains: ProcessesAggregatesReferencedServiceJobServiceJobStatusEnumFilter
+}
+
+input ProcessesAggregatesReferencedServiceJobServiceJobStatusEnumFilter {
+  eq: ServiceJobStatus
+
+  notEq: ServiceJobStatus
+
+  in: [ServiceJobStatus!]
+}
+
+input ProcessesAggregatesReferencedPackJobFilter {
+  status: ProcessesAggregatesReferencedPackJobPackJobStatusEnumListFilter
+}
+
+input ProcessesAggregatesReferencedPackJobPackJobStatusEnumListFilter {
+  contains: ProcessesAggregatesReferencedPackJobPackJobStatusEnumFilter
+}
+
+input ProcessesAggregatesReferencedPackJobPackJobStatusEnumFilter {
+  eq: PackJobStatus
+
+  notEq: PackJobStatus
+
+  in: [PackJobStatus!]
+}
+
+input ProcessesAggregatesReferencedShipmentFilter {
+  status: ProcessesAggregatesReferencedShipmentShipmentStatusEnumListFilter
+}
+
+input ProcessesAggregatesReferencedShipmentShipmentStatusEnumListFilter {
+  contains: ProcessesAggregatesReferencedShipmentShipmentStatusEnumFilter
+}
+
+input ProcessesAggregatesReferencedShipmentShipmentStatusEnumFilter {
+  eq: ShipmentStatus
+
+  notEq: ShipmentStatus
+
+  in: [ShipmentStatus!]
+}
+
+input ProcessesAggregatesReferencedParcelFilter {
+  status: ProcessesAggregatesReferencedParcelParcelStatusEnumListFilter
+}
+
+input ProcessesAggregatesReferencedParcelParcelStatusEnumListFilter {
+  contains: ProcessesAggregatesReferencedParcelParcelStatusEnumFilter
+}
+
+input ProcessesAggregatesReferencedParcelParcelStatusEnumFilter {
+  eq: ParcelStatus
+
+  notEq: ParcelStatus
+
+  in: [ParcelStatus!]
 }
 
 input ProcessesAggregatesReferencedStickerFilter {
@@ -11510,7 +11923,11 @@ input ProcessesAggregatesSort {
 
   operativeStatus: SearchSortDirection
 
+  activeFacilityName: SearchSortDirection
+
   returnStatus: SearchSortDirection
+
+  inventoryStatus: SearchSortDirection
 }
 
 input ProcessesAggregatesReferencedSort {
@@ -11529,6 +11946,8 @@ input ProcessesAggregatesReferencedSort {
   brand: ProcessesAggregatesBrandSort
 
   parcelTrackingStatus: SearchSortDirection
+
+  orderServiceType: SearchSortDirection
 }
 
 input ProcessesAggregatesOrderSort {
@@ -11915,6 +12334,152 @@ input TagSort {
   id: SearchSortDirection
 }
 
+type OrderRecordsConnectionV2 {
+  pageInfo: PageInfo!
+
+  totalCount: Int!
+
+  edges: [OrderRecordEdgeV2]
+}
+
+type OrderRecordEdgeV2 {
+  cursor: String!
+
+  node: OrderRecord
+}
+
+input OrderRecordFilterV2 {
+  and: [OrderRecordFilterV2!]
+
+  or: [OrderRecordFilterV2!]
+
+  tenantOrderRecordId: StringFilter
+
+  facilityName: StringFilter
+
+  consumer: OrderRecordConsumerFilter
+
+  payments: OrderRecordPaymentsListFilter
+
+  origin: OrderRecordOriginFilter
+
+  lineItems: OrderRecordLineItemsListFilter
+
+  orderRecordDate: DateFilter
+}
+
+input OrderRecordConsumerFilter {
+  consumerId: StringFilter
+
+  addresses: OrderRecordConsumerAddressesListFilter
+}
+
+input OrderRecordConsumerAddressesListFilter {
+  contains: OrderRecordConsumerAddressesFilter
+}
+
+input OrderRecordConsumerAddressesFilter {
+  lastName: StringFilter
+
+  companyName: StringFilter
+}
+
+input OrderRecordPaymentsListFilter {
+  contains: OrderRecordPaymentsFilter
+}
+
+input OrderRecordPaymentsFilter {
+  receiptNumber: StringFilter
+
+  transactionId: StringFilter
+}
+
+input OrderRecordOriginFilter {
+  terminalId: StringFilter
+
+  cashierId: StringFilter
+}
+
+input OrderRecordLineItemsListFilter {
+  contains: OrderRecordLineItemsFilter
+}
+
+input OrderRecordLineItemsFilter {
+  article: OrderRecordLineItemsArticleFilter
+}
+
+input OrderRecordLineItemsArticleFilter {
+  tenantArticleId: StringFilter
+}
+
+input OrderRecordSort {
+  tenantOrderRecordId: SearchSortDirection
+
+  facilityName: SearchSortDirection
+
+  orderRecordDate: SearchSortDirection
+
+  consumer: OrderRecordConsumerSort
+
+  payments: OrderRecordPaymentsSort
+
+  origin: OrderRecordOriginSort
+
+  lineItems: OrderRecordLineItemsSort
+
+  pricing: OrderRecordPricingSort
+
+  facilityCountry: SearchSortDirection
+}
+
+input OrderRecordConsumerSort {
+  addresses: OrderRecordAddressesSort
+}
+
+input OrderRecordAddressesSort {
+  lastName: SearchSortDirection
+
+  companyName: SearchSortDirection
+
+  firstName: SearchSortDirection
+
+  city: SearchSortDirection
+
+  country: SearchSortDirection
+
+  postalCode: SearchSortDirection
+}
+
+input OrderRecordPaymentsSort {
+  receiptNumber: SearchSortDirection
+
+  transactionId: SearchSortDirection
+
+  paymentMethod: SearchSortDirection
+
+  status: SearchSortDirection
+}
+
+input OrderRecordOriginSort {
+  terminalId: SearchSortDirection
+
+  cashierId: SearchSortDirection
+
+  type: SearchSortDirection
+}
+
+input OrderRecordLineItemsSort {
+  quantity: SearchSortDirection
+}
+
+input OrderRecordPricingSort {
+  total: OrderRecordTotalSort
+}
+
+input OrderRecordTotalSort {
+  priceBreakdownTotal: SearchSortDirection
+}
+
 type TagReference {
   id: String!
 
@@ -12189,6 +12754,22 @@ enum ArticleAttributeItemCategory {
   CarrierService
 
   SalesPrice
+
+  BasePrice
+
+  Tax
+
+  Discount
+
+  Surcharge
+
+  SubtotalBeforeDiscounts
+
+  SubtotalAfterDiscounts
+
+  FinalUnitPrice
+
+  FinalLineItemPrice
 }
 
 enum ArticleAttributeItemType {
@@ -12651,6 +13232,8 @@ enum SupportedLocale {
   hr_HR
 
   hu_HU
+
+  tr_TR
 }
 
 type Subscription {
@@ -13935,6 +14518,42 @@ input CutoffTimeInput {
   hour: Int!
 
   minute: Int!
+}
+
+type FacilityPostalCodesConnection {
+  pageInfo: PageInfo!
+
+  edges: [FacilityPostalCodeEdge!]!
+
+  totalCount: Int!
+}
+
+type FacilityPostalCodeEdge {
+  cursor: String!
+
+  node: FacilityPostalCode!
+}
+
+type FacilityPostalCode {
+  name: String!
+}
+
+type FacilityCitiesConnection {
+  pageInfo: PageInfo!
+
+  edges: [FacilityCityEdge!]!
+
+  totalCount: Int!
+}
+
+type FacilityCityEdge {
+  cursor: String!
+
+  node: FacilityCity!
+}
+
+type FacilityCity {
+  name: String!
 }
 
 input FacilityStatusFilter {
@@ -16348,9 +16967,9 @@ input ListingUpdateInput {
 
   attributes: [ArticleAttributeItemInput!]
 
-  price: Float @deprecated(reason: "Use attributes instead (see article attributes: https://docs.fulfillmenttools.com/documentation/by-pillar/global-inventory-hub/articles/article-attributes)")
+  price: Float @deprecated(reason: "Use attributes instead (see article attributes: https:\/\/docs.fulfillmenttools.com\/documentation\/by-pillar\/global-inventory-hub\/articles\/article-attributes)")
 
-  currency: CurrencyCode @deprecated(reason: "Use attributes instead (see article attributes: https://docs.fulfillmenttools.com/documentation/by-pillar/global-inventory-hub/articles/article-attributes)")
+  currency: CurrencyCode @deprecated(reason: "Use attributes instead (see article attributes: https:\/\/docs.fulfillmenttools.com\/documentation\/by-pillar\/global-inventory-hub\/articles\/article-attributes)")
 
   stockinformation: StockInformationInput
 
@@ -16360,7 +16979,7 @@ input ListingUpdateInput {
 
   partialStocks: [PartialStockInput!]
 
-  weight: Float @deprecated(reason: "Use attributes instead (see article attributes: https://docs.fulfillmenttools.com/documentation/by-pillar/global-inventory-hub/articles/article-attributes)")
+  weight: Float @deprecated(reason: "Use attributes instead (see article attributes: https:\/\/docs.fulfillmenttools.com\/documentation\/by-pillar\/global-inventory-hub\/articles\/article-attributes)")
 
   scanningRule: ScanningRuleConfigurationInput
 
@@ -16520,9 +17139,9 @@ input ListingCreateInput {
 
   attributes: [ArticleAttributeItemInput!]
 
-  price: Float @deprecated(reason: "Use attributes instead (see article attributes: https://docs.fulfillmenttools.com/documentation/by-pillar/global-inventory-hub/articles/article-attributes)")
+  price: Float @deprecated(reason: "Use attributes instead (see article attributes: https:\/\/docs.fulfillmenttools.com\/documentation\/by-pillar\/global-inventory-hub\/articles\/article-attributes)")
 
-  currency: CurrencyCode @deprecated(reason: "Use attributes instead (see article attributes: https://docs.fulfillmenttools.com/documentation/by-pillar/global-inventory-hub/articles/article-attributes)")
+  currency: CurrencyCode @deprecated(reason: "Use attributes instead (see article attributes: https:\/\/docs.fulfillmenttools.com\/documentation\/by-pillar\/global-inventory-hub\/articles\/article-attributes)")
 
   stockinformation: StockInformationInput
 
@@ -16532,7 +17151,7 @@ input ListingCreateInput {
 
   partialStocks: [PartialStockInput!]
 
-  weight: Float @deprecated(reason: "Use attributes instead (see article attributes: https://docs.fulfillmenttools.com/documentation/by-pillar/global-inventory-hub/articles/article-attributes)")
+  weight: Float @deprecated(reason: "Use attributes instead (see article attributes: https:\/\/docs.fulfillmenttools.com\/documentation\/by-pillar\/global-inventory-hub\/articles\/article-attributes)")
 
   scanningRule: ScanningRuleConfigurationInput
 
@@ -17655,7 +18274,7 @@ type ServiceContainer {
   """
   Localized name of this container, sourced from the linked OperativeContainerType.
   """
-  nameLocalized: GraphQLJSON
+  nameLocalized: GraphQLJSON!
 
   """
   URL to an icon representing this container type, sourced from the linked OperativeContainerType.
@@ -17713,6 +18332,11 @@ type ServiceContainer {
   storageLocationRef: String
 
   """
+  Resolved storage location
+  """
+  storageLocation: StorageLocation
+
+  """
   Weight limit of the container in grams, sourced from the linked OperativeContainerType.
   """
   weightLimitInG: Float
@@ -17726,6 +18350,22 @@ type ServiceContainer {
   Reference to the operative container type this container is based on.
   """
   operativeContainerTypeRef: String
+
+  """
+  Resolved operative container type
+  """
+  operativeContainerType: OperativeContainerType
+
+  """
+  Incremental number to distinguish containers of the same type within the same job.
+  Virtual containers always have sequenceNumber 0, physical containers are always greater than 0.
+  """
+  sequenceNumber: Int
+
+  """
+  This object contains information about the container from which this container was created from.
+  """
+  previousModuleContainerInfo: PreviousModuleContainerInfo
 }
 
 type ServiceContainerLineItem implements MandatoryLineItem & LineItem {
@@ -17888,6 +18528,36 @@ input ServiceContainerCreateInput {
   Reference to the operative container type this container is based on.
   """
   operativeContainerTypeRef: String
+
+  """
+  Name of the service container in different languages.
+  """
+  nameLocalized: GraphQLJSON
+
+  """
+  Description of the service container in different languages.
+  """
+  descriptionLocalized: GraphQLJSON
+
+  """
+  Url to an icon representing this container.
+  """
+  iconUrl: String
+
+  """
+  Physical dimensions of this container
+  """
+  dimensions: ContainerDimensionsInput
+
+  """
+  Weight limit of the container in grams
+  """
+  weightLimitInG: Float
+
+  """
+  This object contains information about the container from which this container was created from.
+  """
+  previousModuleContainerInfoInput: PreviousModuleContainerInfoInput
 }
 
 input ServiceContainerLineItemCreateInput {
@@ -19153,6 +19823,36 @@ input ScannableIdentifierInput {
   searchType: SearchType
 }
 
+type PreviousModuleContainerInfo {
+  """
+  The id of the previous container
+  """
+  containerRef: String!
+
+  """
+  The type of the previous container, e.g. LOAD_UNIT or SERVICE_CONTAINER
+  """
+  type: PreviousModuleContainerInfoTypeEnum!
+}
+
+enum PreviousModuleContainerInfoTypeEnum {
+  LOAD_UNIT
+
+  SERVICE_CONTAINER
+}
+
+input PreviousModuleContainerInfoInput {
+  """
+  The id of the previous container
+  """
+  containerRef: String!
+
+  """
+  The type of the previous container, e.g. LOAD_UNIT or SERVICE_CONTAINER
+  """
+  type: PreviousModuleContainerInfoTypeEnum!
+}
+
 input OperativeProcessesFilterInput {
   facilityRef: String!
 }
@@ -20031,6 +20731,17 @@ type PackingSourceContainer implements VersionedResource {
   Assigned to the operative container type
   """
   operativeContainerTypeRef: String
+
+  """
+  Incremental number to distinguish containers of the same type within the same job.
+  Virtual containers always have sequenceNumber 0, physical containers are always greater than 0.
+  """
+  sequenceNumber: Int
+
+  """
+  This object contains information about the container from which this container was created from.
+  """
+  previousModuleContainerInfo: PreviousModuleContainerInfo
 }
 
 type PackingSourceContainerConnection {
@@ -20099,6 +20810,11 @@ input PackingSourceContainerInput {
   Reference to the operative container type that defines the container's properties.
   """
   operativeContainerTypeRef: String
+
+  """
+  This object contains information about the container from which this container was created from.
+  """
+  previousModuleContainerInfoInput: PreviousModuleContainerInfoInput
 }
 
 type PackingSourceContainerLineItem implements MandatoryLineItem & LineItem {
@@ -20477,6 +21193,12 @@ type PackingTargetContainer implements VersionedResource {
   Resolved storage location where the packing target container is located.
   """
   storageLocation: StorageLocation
+
+  """
+  Incremental number to distinguish containers of the same type within the same job.
+  Virtual containers always have sequenceNumber 0, physical containers are always greater than 0.
+  """
+  sequenceNumber: Int
 }
 
 type PackingTargetContainerConnection {
@@ -20749,6 +21471,29 @@ type UpdatePackingTargetContainerLineItemRecordableAttributesResponse {
   packingTargetContainer: PackingTargetContainer
 }
 
+input UpdatePackingTargetContainerStorageLocationInput {
+  """
+  The id of the packing target container to update.
+  """
+  packingTargetContainerId: String!
+
+  """
+  The version of the document to be used in optimistic locking mechanisms.
+  """
+  version: Int!
+
+  """
+  Reference to the location where the packing target container is located.
+  """
+  storageLocationRef: String!
+}
+
+type UpdatePackingTargetContainerStorageLocationResponse {
+  packingTargetContainer: PackingTargetContainer!
+
+  query: Query
+}
+
 enum PackingTargetContainerType {
   PHYSICAL
 
@@ -20819,6 +21564,12 @@ type LoadUnit implements VersionedResource {
   operativeContainerTypeRef: String
 
   stackRef: String
+
+  """
+  Incremental number to distinguish containers of the same type within the same job.
+  Virtual containers always have sequenceNumber 0, physical containers are always greater than 0.
+  """
+  sequenceNumber: Int
 }
 
 type LoadUnitLineItem {
@@ -23184,6 +23935,20 @@ input CancelRestowItemInput {
   restowItemVersion: Int!
 }
 
+input ReplaceLineItemsOnItemReturnJobInput {
+  itemReturnJobId: String!
+
+  itemReturnJobVersion: Int!
+
+  returnableLineItems: [ItemReturnJobLineItemInput!]
+
+  notReturnableLineItems: [ItemReturnJobLineItemInput!]
+}
+
+type ReplaceLineItemsOnItemReturnJobResponse {
+  itemReturnJob: ItemReturnJob!
+}
+
 type CreateItemReturnJobResponse {
   itemReturnJob: ItemReturnJob!
 }
@@ -24182,6 +24947,8 @@ input HandoverContainerDeleteInput {
 
 input HandoverContainersFilter {
   facilityRefs: [String!]
+
+  handoverJobRef: String
 }
 
 type HandoverContainersEdge {
@@ -24242,6 +25009,12 @@ type HandoverContainer {
   storageLocation: StorageLocation
 
   stackRef: String!
+
+  """
+  Incremental number to distinguish containers of the same type within the same job.
+  Always greater than 0 (HandoverContainer has no virtual type).
+  """
+  sequenceNumber: Int
 }
 
 type HandoverContainerLineItem implements MandatoryLineItem & LineItem {
@@ -24535,7 +25308,7 @@ type HandoverJob implements VersionedResource {
 
   channel: HandoverJobChannel!
 
-  loadUnitRefs: [String!]
+  loadUnitRefs: [String!] @deprecated(reason: "This field is deprecated since 30 April 2026. HandoverJobs should not be aware of load units. The relation to load units are via handover container, if there ist a relation.")
 
   customAttributes: GraphQLJSON
 
@@ -24874,7 +25647,7 @@ input HandoverJobCreateInput {
   """
   Reference to array of load unit Refs
   """
-  loadUnitRefs: [String!]
+  loadUnitRefs: [String!] @deprecated(reason: "This field is deprecated since 30 April 2026. HandoverJobs should not be aware of load units. The relation to load units are via handover container, if there ist a relation.")
 
   """
   Attributes that can be added to the handover job. These attributes cannot be used within fulfillment processes, but it could be useful to have the information carried here.
@@ -25367,6 +26140,12 @@ type ParcelServices {
   identityCheckPrivate: Boolean
 
   additionalTransportationInsurance: Boolean
+
+  identityAgeCheck18: Boolean
+
+  handoverToRecipientOnly: Boolean
+
+  noNeighborDelivery: Boolean
 }
 
 type ParcelPickUpInformation {
@@ -25590,6 +26369,12 @@ input ParcelServicesInput {
   identityCheckPrivate: Boolean
 
   additionalTransportationInsurance: Boolean
+
+  identityAgeCheck18: Boolean
+
+  handoverToRecipientOnly: Boolean
+
+  noNeighborDelivery: Boolean
 }
 
 input ParcelItemInput {
@@ -26302,6 +27087,8 @@ input OrderUpdateInput {
 
   customAttributes: GraphQLJSON
 
+  pricing: OrderPricingForCreationInput
+
   version: Int!
 
   id: String!
@@ -26362,6 +27149,143 @@ input OrderCreateInput {
   customServices: [CustomServiceReferenceInput!]
 
   statusReasons: [OrderStatusReasonInput!]
+
+  pricing: OrderPricingForCreationInput
+}
+
+"""
+Monetary value represented as an integer to avoid floating-point issues.
+"""
+type OrderMonetaryValue {
+  """
+  The monetary value as integer (no decimals)
+  """
+  value: Int!
+
+  """
+  ISO 4217 currency code
+  """
+  currency: CurrencyCode!
+
+  """
+  Number of decimal places
+  """
+  decimalPlaces: Int
+}
+
+input OrderMonetaryValueInput {
+  value: Int!
+
+  currency: CurrencyCode!
+
+  decimalPlaces: Int
+}
+
+type OrderPricingDiscount {
+  name: String
+
+  nameLocalized: GraphQLJSON
+
+  type: String
+
+  value: OrderMonetaryValue!
+
+  context: String
+
+  code: String
+
+  tenantDiscountId: String
+}
+
+input OrderPricingDiscountInput {
+  name: String
+
+  nameLocalized: GraphQLJSON
+
+  type: String
+
+  value: OrderMonetaryValueInput!
+
+  context: String
+
+  code: String
+
+  tenantDiscountId: String
+}
+
+type OrderPricingFee {
+  name: String
+
+  value: OrderMonetaryValue
+}
+
+input OrderPricingFeeInput {
+  name: String
+
+  value: OrderMonetaryValueInput
+}
+
+type OrderPricingTax {
+  type: String
+
+  """
+  Tax rate as a percentage
+  """
+  ratePercent: Float
+
+  value: OrderMonetaryValue!
+
+  scope: String
+
+  taxableValue: OrderMonetaryValue
+}
+
+input OrderPricingTaxInput {
+  type: String
+
+  ratePercent: Float
+
+  value: OrderMonetaryValueInput!
+
+  scope: String
+
+  taxableValue: OrderMonetaryValueInput
+}
+
+type OrderPricingTotals {
+  subTotal: OrderMonetaryValue
+
+  totalDiscounts: OrderMonetaryValue
+
+  totalTaxes: OrderMonetaryValue
+
+  totalFees: OrderMonetaryValue
+
+  totalDeposit: OrderMonetaryValue
+
+  total: OrderMonetaryValue
+}
+
+type OrderPricingTotal {
+  priceBreakdown: OrderPricingTotals
+}
+
+type OrderPricing {
+  discounts: [OrderPricingDiscount!]
+
+  fees: [OrderPricingFee!]
+
+  taxes: [OrderPricingTax!]
+
+  total: OrderPricingTotal
+}
+
+input OrderPricingForCreationInput {
+  discounts: [OrderPricingDiscountInput!]
+
+  fees: [OrderPricingFeeInput!]
+
+  taxes: [OrderPricingTaxInput!]
 }
 
 input OrderStatusReasonInput {
@@ -26494,6 +27418,8 @@ type Order implements VersionedResource {
   cancelationReason: CancelationReason
 
   updateDetails: [OrderUpdateDetail!]
+
+  pricing: OrderPricing
 }
 
 type OrderUpdateDetail {
@@ -26864,6 +27790,12 @@ enum CarrierServices {
   IDENTITY_CHECK_PRIVATE
 
   ADDITIONAL_TRANSPORTATION_INSURANCE
+
+  IDENTITY_AGE_CHECK_18
+
+  NO_NEIGHBOR_DELIVERY
+
+  HANDOVER_TO_RECIPIENT_ONLY
 }
 
 enum ServiceLevel {
@@ -27169,6 +28101,10 @@ type ParcelResultForProcessSearch {
   summary: String!
 
   trackingStatus: TrackingStatus
+
+  trackingUrl: String
+
+  carrierTrackingNumber: String
 }
 
 type ShipmentForProcessSearch {
@@ -27321,6 +28257,8 @@ type OrderForProcessSearch {
   orderLineItems: [OrderLineItemForProcessSearch!]!
 
   updateDetails: [OrderUpdateDetailForProcessSearch!]
+
+  orderServiceType: OrderServiceType
 }
 
 type OrderUpdateDetailForProcessSearch {
@@ -27471,6 +28409,14 @@ type MeasurementUnitForProcessSearch {
   abbreviation: String
 
   requiresMeasurement: Boolean
+}
+
+enum OrderServiceType {
+  COLLECT
+
+  SHIPPING
+
+  SUPPLY
 }
 
 input ProcessFilter {
@@ -27747,6 +28693,8 @@ type Process implements VersionedResource {
   routingPlansGraph: RoutingPlansGraph
 
   processHistoryLogs(first: Int = 10, after: String, filterConsecutiveDuplicates: Boolean): ProcessHistoryLogsConnection!
+
+  routingJournals(first: Int = 10, after: String): RoutingJournalsConnection
 }
 
 type AvailableProcessActions {
@@ -27761,6 +28709,10 @@ type AvailableProcessAction {
 
 enum AvailableProcessActionName {
   REROUTE
+
+  MANUAL_ASSIGN
+
+  MANUAL_REROUTE
 }
 
 type DomainStatusHistoryItem {
@@ -27894,6 +28846,8 @@ enum ProcessHistoryEventType {
   OPERATIVE_TASK_CREATED
 
   PICKING_IN_PROGRESS
+
+  PICKING_PAUSED
 
   PICKING_DONE
 
@@ -31166,6 +32120,8 @@ enum RerouteReason {
 }
 
 enum RoutingPlanStatus {
+  IN_PREPARATION
+
   INITIAL
 
   PRIORITIZED
@@ -33059,11 +34015,6 @@ enum CalculationStrategy {
 }
 
 """
-The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.
-"""
-scalar Int
-
-"""
 A GraphQL Schema defines the capabilities of a GraphQL server. It exposes all available types and directives on the server, as well as the entry points for query, mutation, and subscription operations.
 """
 type __Schema {
@@ -33368,6 +34319,7 @@ directive @semanticNonNull ("An array of integers specifying the zero-indexed de
 """
 Directs the GraphQL execution engine on how to handle errors at specified field levels using the 'levels' argument. This functionality enhances granular error management capabilities in complex data structures and queries.
 """
+directive @catch (to: CatchTo! = RESULT, "Indicates how clients should handle errors on a given position.\n\n      The `levels` argument indicates where to catch errors in case of lists:\n\n      ```graphql\n      {\n          user {\n              # friends catches errors\n              friends @catch { name } # same as @catch(levels: [0])\n\n              # every friends[k] catches errors\n              friends @catch(levels: [0]) { name }\n\n              # friends as well as every friends[k] catches errors\n              friends @catch(levels: [0, 1]) { name }\n          }\n      }\n      ```\n\n      `levels` are zero indexed.\n      Passing a negative level or a level greater than the list dimension is an error.\n\n      See `CatchTo` for more details." levels: [Int!]! = [0]) on FIELD
 
 directive @InContext ("This directive provides context variables such as the requested language. Alpha, not working everywhere yet." lang: SupportedLocale) on QUERY|MUTATION
 
@@ -33386,7 +34338,7 @@ directive @skip ("Skipped when true." if: Boolean!) on FIELD|FRAGMENT_SPREAD|INL
 """
 Marks an element of a GraphQL schema as no longer supported.
 """
-directive @deprecated ("Explains why this element was deprecated, usually also including a suggestion for how to access supported similar data. Formatted using the Markdown syntax, as specified by [CommonMark](https://commonmark.org/)." reason: String = "No longer supported") on FIELD_DEFINITION|ARGUMENT_DEFINITION|INPUT_FIELD_DEFINITION|ENUM_VALUE
+directive @deprecated ("Explains why this element was deprecated, usually also including a suggestion for how to access supported similar data. Formatted using the Markdown syntax, as specified by [CommonMark](https:\/\/commonmark.org\/)." reason: String = "No longer supported") on FIELD_DEFINITION|ARGUMENT_DEFINITION|INPUT_FIELD_DEFINITION|ENUM_VALUE
 
 """
 Exposes a URL that specifies the behavior of this scalar.

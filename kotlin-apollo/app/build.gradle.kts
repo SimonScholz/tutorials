@@ -1,7 +1,6 @@
 plugins {
-    // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
     alias(libs.plugins.kotlin.jvm)
-    id("com.apollographql.apollo") version "4.4.3"
+    id("com.apollographql.apollo") version "5.0.0"
 
     application
 }
@@ -11,15 +10,16 @@ repositories {
 }
 
 dependencies {
-    implementation("com.apollographql.apollo:apollo-runtime:4.4.3")
+    implementation("com.apollographql.apollo:apollo-runtime:5.0.0")
     implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
-
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 apollo {
     service("service") {
         packageName.set("dev.simonscholz")
+        introspection {
+            schemaFile.set(file("src/main/graphql/schema.graphqls"))
+        }
     }
 }
 
