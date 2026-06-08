@@ -14,5 +14,5 @@ jackson-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr
 jakarta-annotation = { module = "jakarta.annotation:jakarta.annotation-api", version.ref = "jakarta-annotation" }
 
 [plugins]
-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version = "2.2.0" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version = "2.4.0" }
 openapi = { id = "org.openapi.generator", version.ref = "open-api" }

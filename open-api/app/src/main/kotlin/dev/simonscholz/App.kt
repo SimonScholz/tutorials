@@ -14,8 +14,9 @@ fun main() {
 
     val baseUri = dotenv["baseUri"]
     val bearerToken = dotenv["bearerToken"]
-    val inboundProcessId = "019d728c-7bf4-74ed-998a-54ca02999463"
-    val newQty = 15
+    val inboundProcessId = "019e1c18-9b01-7099-9030-9179ef5a745c"
+    val newQty: Int? = null
+    val newSku: String? = "10265071"
     val requestedDate: InputRequestedDateDTO? = null
 
     val authorizationHeader =
@@ -38,9 +39,9 @@ fun main() {
             println("Current quantity for item ${it.tenantArticleId} is ${it.quantity.value} and will be updated to $newQty")
             val modifiedQty =
                 it.quantity.apply {
-                    value = newQty
+                    value = newQty ?: it.quantity.value
                 }
-            it.quantity(modifiedQty)
+            it.quantity(modifiedQty).tenantArticleId(newSku ?: it.tenantArticleId)
         }
 
     val updateDTO =

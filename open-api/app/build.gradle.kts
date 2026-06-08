@@ -41,6 +41,14 @@ application {
     mainClass = "dev.simonscholz.AppKt"
 }
 
+val generateAllApis by tasks.registering {
+    dependsOn(apiTasks)
+}
+
+tasks.compileKotlin {
+    dependsOn(generateAllApis)
+}
+
 configureOpenApiClient(
     taskName = "generateFftApiClient",
     spec = "$rootDir/stripped-fft-api.yaml",
@@ -52,6 +60,12 @@ configureOpenApiClient(
     spec = "$rootDir/stock-fft-api.yaml",
     basePackage = "dev.simonscholz.api.stock.client.fft",
 )
+
+val apiTasks =
+    listOf(
+        tasks.getByName("generateFftApiClient"),
+        tasks.getByName("generateStockFftApiClient"),
+    )
 
 fun configureOpenApiClient(
     taskName: String,
