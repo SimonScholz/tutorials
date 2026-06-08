@@ -1,0 +1,20 @@
+query RepositoriesContributedTo($count: Int!, $cursor: String) {
+    viewer {
+        login
+        name
+        repositoriesContributedTo(first: $count, after: $cursor, contributionTypes: [COMMIT, PULL_REQUEST, ISSUE, PULL_REQUEST_REVIEW]) {
+            totalCount
+            nodes {
+                nameWithOwner
+                stargazerCount
+                primaryLanguage {
+                    name
+                }
+            }
+            pageInfo {
+                endCursor
+                hasNextPage
+            }
+        }
+    }
+}

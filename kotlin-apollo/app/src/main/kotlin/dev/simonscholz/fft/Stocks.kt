@@ -1,4 +1,4 @@
-package dev.simonscholz
+package dev.simonscholz.fft
 
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.ApolloResponse
@@ -8,8 +8,8 @@ suspend fun main() {
     val env = dotenv()
     val token = env["TOKEN"]
     val serverUrl = env["SERVER_URL"]
-    val sku = env["SKU"]
     val facility = env["FACILITY"]
+    val sku = env["SKU"]
 
     val apolloClient =
         ApolloClient

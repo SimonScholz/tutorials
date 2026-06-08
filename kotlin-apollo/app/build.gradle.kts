@@ -15,11 +15,19 @@ dependencies {
 }
 
 apollo {
-    service("service") {
-        packageName.set("dev.simonscholz")
+    service("github") {
+        packageName.set("dev.simonscholz.github")
         introspection {
-            schemaFile.set(file("src/main/graphql/schema.graphqls"))
+            schemaFile.set(file("src/main/graphql/github/schema.graphqls"))
         }
+        srcDir("src/main/graphql/github")
+    }
+    service("fft") {
+        packageName.set("dev.simonscholz.fft")
+        introspection {
+            schemaFile.set(file("src/main/graphql/fft/schema.graphqls"))
+        }
+        srcDir("src/main/graphql/fft")
     }
 }
 
@@ -30,7 +38,7 @@ java {
 }
 
 application {
-    mainClass = "dev.simonscholz.AppKt"
+    mainClass = "dev.simonscholz.fft.AppKt"
 }
 
 tasks.named<Test>("test") {

@@ -1,9 +1,8 @@
-package dev.simonscholz
+package dev.simonscholz.fft
 
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
-import dev.simonscholz.InboundProcessesQuery.InboundProcessesV2
-import dev.simonscholz.type.InboundProcessStatus
+import dev.simonscholz.fft.type.InboundProcessStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.toList
@@ -17,7 +16,7 @@ fun fetchAllInboundProcesses(
     apolloClient: ApolloClient,
     status: InboundProcessStatus,
     after: Optional<String?> = Optional.absent(),
-): Flow<InboundProcessesV2> =
+): Flow<InboundProcessesQuery.InboundProcessesV2> =
     flow {
         var nextCursor: Optional<String?> = after
         var hasNextPage = true
@@ -65,7 +64,7 @@ suspend fun main() {
 
     println("Total pages fetched: ${inboundProcessesV2.size}")
 
-    val allEdges = inboundProcessesV2.flatMap { ib: InboundProcessesV2 -> ib.edges!! }
+    val allEdges = inboundProcessesV2.flatMap { ib: InboundProcessesQuery.InboundProcessesV2 -> ib.edges!! }
 
     println("Total edges fetched: ${allEdges.size}")
 

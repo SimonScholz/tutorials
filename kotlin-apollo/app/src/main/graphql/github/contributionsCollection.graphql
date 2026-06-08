@@ -1,0 +1,24 @@
+query Contributions($fromTime: DateTime!, $toTime: DateTime!) {
+    viewer {
+        contributionsCollection(from: $fromTime, to: $toTime) {
+            startedAt
+            endedAt
+            commitContributionsByRepository(maxRepositories: 100) {
+                repository {
+                    nameWithOwner
+                    url
+                }
+            }
+            pullRequestContributionsByRepository(maxRepositories: 100) {
+                repository {
+                    nameWithOwner
+                }
+            }
+            issueContributionsByRepository(maxRepositories: 100) {
+                repository {
+                    nameWithOwner
+                }
+            }
+        }
+    }
+}
