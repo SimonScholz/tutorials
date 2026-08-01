@@ -1,0 +1,4 @@
+quarkus:
+  oidc:
+    devservices:
+      enabled: true

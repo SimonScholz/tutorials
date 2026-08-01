@@ -1,0 +1,9 @@
+quarkus:
+  http:
+    cors:
+      enabled: false
+      origins: "*" # Adjust for production
+  mcp:
+    server:
+      http:
+        root-path: /mcp

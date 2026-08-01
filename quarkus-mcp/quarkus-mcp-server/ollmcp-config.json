@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "quarkus-mcp-server": {
+      "type": "streamable_http",
+      "url": "http://localhost:8080/mcp",
+      "headers": {
+        "Authorization": "Bearer eyJraWQiOiJmcjZSalRGd2FuMXhTOXJqOW1SZ1ViXzlYTDlSN1pHaERyZ04tdW1xUFRZIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJpYXQiOjE3ODU2MjM0MTksImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NDEwNjMiLCJzdWIiOiJib2IiLCJzY29wZSI6IiIsInVwbiI6ImJvYiIsIm5hbWUiOiJCb2IiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJib2JAZXhhbXBsZS5jb20iLCJlbWFpbCI6ImJvYkBleGFtcGxlLmNvbSIsImdyb3VwcyI6WyJ1c2VyIl0sImV4cCI6MTc4NTYyMzcxOSwianRpIjoiZDdkMDBkYzgtOTRlNC00OTI4LWI2MWEtZGUwMTFiYWM2Y2RmIn0.ez-63TY2N8NPzrfPSuqyxZvGXM4P62XeuWC_f1zoTTjt5U81A8LE1XRlmdrP6DRS1_LXYZFQ-ek78K8IE4lMFu_PV6KK5NYrYfTHUllvik_VUr2ltnSARFVOlgA0zM8LEbgFeVLJVB3V84YZIiRO70aBiS1qrAG_DjRnEhUp73Z2wvQxXc8XM4DVvDyeg_DoVvfBlKj1ukhm6JbmceqRfknTR4taTSxUd3d7fI32sRoiGk-oj4QK-GfqMc-SfCkWM4-evEVLikvDJbZBN6_3GTDTRz1osPwELwz_PJUW3kr-zHWgYYSJ7bv4DDDR-d67gQpMoKb8rkhe_QCfhaXG8g"
+      }
+    }
+  }
+}
