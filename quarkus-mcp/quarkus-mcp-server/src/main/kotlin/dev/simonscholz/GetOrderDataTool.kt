@@ -60,7 +60,7 @@ class GetOrderDataTool {
     @Authenticated
     @Tool(name = "lastOrderData", description = "Gets data about the user´s last order.")
     @RunOnVirtualThread
-    fun lastOrderData(log: McpLog): Order? {
+    fun lastOrderData(log: McpLog): GetOrderResult {
         val email: String = accessToken.getClaim(Claims.email.name)
         log.info("Finding order for user $email") // you never want to have email in your logs ;)
         val order = findLastOrderOfUser(email)
@@ -74,7 +74,7 @@ class GetOrderDataTool {
     fun orderDataByOrderNumber(
         @ToolArg(description = "orderNumber") orderNumber: String,
         log: McpLog,
-    ): Order? {
+    ): GetOrderResult {
         val email: String = accessToken.getClaim(Claims.email.name)
         log.info("Finding order for user $email") // you never want to have email in your logs ;)
         val order = finOrderByOrderNumber(email, orderNumber)
@@ -82,13 +82,37 @@ class GetOrderDataTool {
         return order
     }
 
-    private fun findLastOrderOfUser(email: String): Order? = orders.sortedBy { it.date }.lastOrNull { it.customerEmail == email }
+    private fun findLastOrderOfUser(email: String): GetOrderResult =
+        orders.sortedBy { it.date }.lastOrNull { it.customerEmail == email }?.let {
+            OrderFound(it)
+        } ?: OrderNotFound("No orders found for user with email $email")
 
     private fun finOrderByOrderNumber(
         email: String,
         orderNumber: String,
-    ): Order? = orders.sortedBy { it.date }.lastOrNull { it.customerEmail == email && it.orderNumber == orderNumber }
+    ): GetOrderResult =
+        orders.sortedBy { it.date }.lastOrNull { it.customerEmail == email && it.orderNumber == orderNumber }?.let {
+            OrderFound(it)
+        } ?: OrderNotFound(orderNumber).takeIf { orders.none { order -> order.orderNumber == orderNumber } } ?: OrderAccessDenied(
+            orderId = orderNumber,
+        )
 }
+
+sealed interface GetOrderResult
+
+data class OrderFound(
+    val order: Order,
+) : GetOrderResult
+
+data class OrderAccessDenied(
+    val orderId: String,
+    val message: String = "You are not allowed to access this order.",
+) : GetOrderResult
+
+data class OrderNotFound(
+    val orderId: String,
+    val message: String = "Order not found.",
+) : GetOrderResult
 
 data class Order(
     val orderNumber: String,

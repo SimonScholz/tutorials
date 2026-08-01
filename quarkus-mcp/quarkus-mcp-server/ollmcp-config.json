@@ -4,8 +4,61 @@
       "type": "streamable_http",
       "url": "http://localhost:8080/mcp",
       "headers": {
-        "Authorization": "Bearer eyJraWQiOiJmcjZSalRGd2FuMXhTOXJqOW1SZ1ViXzlYTDlSN1pHaERyZ04tdW1xUFRZIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJpYXQiOjE3ODU2MjM0MTksImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NDEwNjMiLCJzdWIiOiJib2IiLCJzY29wZSI6IiIsInVwbiI6ImJvYiIsIm5hbWUiOiJCb2IiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJib2JAZXhhbXBsZS5jb20iLCJlbWFpbCI6ImJvYkBleGFtcGxlLmNvbSIsImdyb3VwcyI6WyJ1c2VyIl0sImV4cCI6MTc4NTYyMzcxOSwianRpIjoiZDdkMDBkYzgtOTRlNC00OTI4LWI2MWEtZGUwMTFiYWM2Y2RmIn0.ez-63TY2N8NPzrfPSuqyxZvGXM4P62XeuWC_f1zoTTjt5U81A8LE1XRlmdrP6DRS1_LXYZFQ-ek78K8IE4lMFu_PV6KK5NYrYfTHUllvik_VUr2ltnSARFVOlgA0zM8LEbgFeVLJVB3V84YZIiRO70aBiS1qrAG_DjRnEhUp73Z2wvQxXc8XM4DVvDyeg_DoVvfBlKj1ukhm6JbmceqRfknTR4taTSxUd3d7fI32sRoiGk-oj4QK-GfqMc-SfCkWM4-evEVLikvDJbZBN6_3GTDTRz1osPwELwz_PJUW3kr-zHWgYYSJ7bv4DDDR-d67gQpMoKb8rkhe_QCfhaXG8g"
+        "Authorization": "Bearer eyJraWQiOiJMaS1GNVF1Uzg0dFZOR1FCTzlBOGU4NGpqOTk3S01PR0ZFc2ZRcGZ1c3JNIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJpYXQiOjE3ODU2MjU5OTAsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzYzMTUiLCJzdWIiOiJhbGljZSIsInNjb3BlIjoiIiwidXBuIjoiYWxpY2UiLCJuYW1lIjoiQWxpY2UiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJhbGljZUBleGFtcGxlLmNvbSIsImVtYWlsIjoiYWxpY2VAZXhhbXBsZS5jb20iLCJncm91cHMiOlsiYWRtaW4iLCJ1c2VyIl0sImV4cCI6MTc4NTYyNjI5MCwianRpIjoiMzMzNDNiZjEtMDc2ZC00NTM2LThmY2MtY2NiMGU1YmFlYmEyIn0.Gh8Ucz6Js-m7xA_OSVLoEjqIVgj9j9jbW4c1hBra421CGPlueSsTcjZ32RvdZiX7S59tL7RWIGVnVjAMHG2bnI9IMi13rglExwEssNr_2NuLd77NmgqjjTw3bMbH0LTekYtAibvxuKOPre2zTP25-oM1KgEXixuK69X1eY4AJwHoaJ6f6ybH7aUu_DTv7_za93NgrwORMsigB98MC77CnH8OryL-dRLalRqRsTaVohJyV0C96VMnsHK86fOp2EefAQn8ysfa8GsNnruKsD52gvmZrpiIS4ETQd98_gxrSm8MnwyWQqSMavrlM0xFDRN9RcZQ_M91z8m4VognYtbsXQ"
       }
     }
+  },
+  "defaultProvider": "ollama",
+  "providers": {
+    "ollama": {
+      "host": "http://localhost:11434",
+      "model": "qwen3:4b",
+      "apiKey": ""
+    }
+  },
+  "enabledTools": {
+    "quarkus-mcp-server.freelancer": true,
+    "quarkus-mcp-server.lastOrderData": true,
+    "quarkus-mcp-server.orderDataByOrderNumber": true
+  },
+  "contextSettings": {
+    "retainContext": true
+  },
+  "modelSettings": {
+    "thinkingMode": true,
+    "showThinking": true,
+    "reasoningEffort": "medium"
+  },
+  "agentSettings": {
+    "loopLimit": 7
+  },
+  "modelConfig": {
+    "system_prompt": "",
+    "num_keep": null,
+    "seed": null,
+    "num_predict": null,
+    "top_k": null,
+    "top_p": null,
+    "min_p": null,
+    "typical_p": null,
+    "repeat_last_n": null,
+    "temperature": null,
+    "repeat_penalty": null,
+    "presence_penalty": null,
+    "frequency_penalty": null,
+    "stop": null,
+    "num_ctx": null,
+    "num_batch": null
+  },
+  "displaySettings": {
+    "showToolExecution": true,
+    "showMetrics": false,
+    "answerRenderMode": "markdown"
+  },
+  "inputSettings": {
+    "inputMode": "single"
+  },
+  "hilSettings": {
+    "enabled": false
   }
 }
